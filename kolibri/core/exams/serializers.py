@@ -57,6 +57,7 @@ class ExamSerializer(ModelSerializer):
         fields = (
             "id",
             "title",
+            "question_pool_size",
             "question_count",
             "question_sources",
             "seed",

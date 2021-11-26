@@ -93,8 +93,9 @@ export function createChannelQuizAndRoute(store, { classId, randomized }) {
     collection: classId,
     title: store.state.title,
     seed: store.state.seed,
-    question_count: store.state.selectedQuestions.length,
+    question_count: store.state.numberOfQuestions,
     question_sources: store.state.selectedQuestions,
+    question_pool_size: store.state.questionPoolSize,
     assignments: [classId],
     learners_see_fixed_order: store.state.learnersSeeFixedOrder,
     date_archived: null,
@@ -110,7 +111,8 @@ export function createExamAndRoute(store, { classId }) {
     collection: classId,
     title: store.state.title,
     seed: store.state.seed,
-    question_count: store.state.selectedQuestions.length,
+    question_count: store.state.numberOfQuestions,
+    question_pool_size: store.state.questionPoolSize,
     question_sources: store.state.selectedQuestions,
     assignments: [classId],
     learners_see_fixed_order: store.state.learnersSeeFixedOrder,
@@ -203,7 +205,7 @@ export function updateSelectedQuestions(store) {
     const exerciseIds = shuffled(
       Object.keys(store.state.selectedExercises),
       store.state.seed
-    ).slice(0, store.state.numberOfQuestions);
+    ).slice(0, store.state.questionPoolSize);
 
     store.commit('LOADING_NEW_QUESTIONS', true);
 
@@ -225,6 +227,7 @@ export function updateSelectedQuestions(store) {
         'SET_SELECTED_QUESTIONS',
         selectQuestions(
           store.state.numberOfQuestions,
+          store.state.questionPoolSize,
           availableExercises,
           exerciseTitles,
           questionIdArrays,

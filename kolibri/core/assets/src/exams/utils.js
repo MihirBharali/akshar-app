@@ -166,7 +166,17 @@ export function getExamReport(store, examId, userId, questionNumber = 0, interac
       samePageCheckGenerator(store),
       ([exam, examLogs, examAttempts, user]) => {
         const examLog = examLogs[0] || {};
-        const questionSources = exam.question_sources;
+        var questionSources;
+
+        if (
+          examLog.selected_question_ids != undefined &&
+          examLog.selected_question_ids.length > 0
+        ) {
+          questionSources = examLog.selected_question_ids;
+          exam.question_sources = examLog.selected_question_ids;
+        } else {
+          questionSources = exam.question_sources;
+        }
 
         let contentPromise;
 

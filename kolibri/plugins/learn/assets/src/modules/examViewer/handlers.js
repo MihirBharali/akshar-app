@@ -43,11 +43,17 @@ export function showExam(store, params, alreadyOnQuiz) {
       samePageCheckGenerator(store),
       ([classroom, exam, examLogs, examAttemptLogs]) => {
         store.commit('classAssignments/SET_CURRENT_CLASSROOM', classroom);
-
         // Local copy of exam attempt logs
         const attemptLogs = {};
-
+        let questionSet = {};
         if (examLogs.length > 0 && examLogs.some(log => !log.closed)) {
+          let examLog = examLogs.find(log => !log.closed);
+          if (
+            examLog.selected_question_ids !== undefined &&
+            examLog.selected_question_ids.length > 0
+          ) {
+            questionSet = examLog.selected_question_ids;
+          }
           store.commit(
             'SET_EXAM_LOG',
             examLogs.find(log => !log.closed)
@@ -63,13 +69,21 @@ export function showExam(store, params, alreadyOnQuiz) {
             },
           });
         } else {
-          ExamLogResource.createModel({ ...examParams, closed: false })
+          // create a new ExamLog object
+          questionSet = getRandomQuestions(exam.question_sources, exam.question_count);
+          ExamLogResource.createModel({
+            ...examParams,
+            closed: false,
+            selected_question_ids: questionSet,
+          })
             .save()
             .then(newExamLog => {
               store.commit('SET_EXAM_LOG', newExamLog);
               return ExamLogResource.unCacheCollection(examParams);
             });
         }
+
+        exam.question_sources = questionSet;
 
         if (!canViewExam(exam, store.state.examLog)) {
           return router.replace({ name: ClassesPageNames.CLASS_ASSIGNMENTS, params: { classId } });
@@ -175,4 +189,12 @@ export function showExam(store, params, alreadyOnQuiz) {
       }
     );
   }
+}
+
+function getRandomQuestions(questionPool, numberOfQuestions) {
+  // Shuffle array
+  const shuffled = questionPool.sort(() => 0.5 - Math.random());
+  // Get sub-array of first n elements after shuffled
+  let selected = shuffled.slice(0, numberOfQuestions);
+  return selected;
 }

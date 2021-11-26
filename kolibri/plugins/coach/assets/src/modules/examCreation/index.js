@@ -9,6 +9,7 @@ function defaultState() {
   return {
     title: '',
     numberOfQuestions: 10,
+    questionPoolSize: 10,
     seed: getRandomInt(), // consistent seed is used for question selection
     contentList: [],
     selectedExercises: {},
@@ -57,6 +58,9 @@ export default {
     },
     SET_NUMBER_OF_QUESTIONS(state, numberOfQuestions) {
       state.numberOfQuestions = numberOfQuestions;
+    },
+    SET_NUMBER_OF_QUESTIONS_IN_POOL(state, questionPoolSize) {
+      state.questionPoolSize = questionPoolSize;
     },
     RANDOMIZE_SEED(state) {
       state.seed = getRandomInt();
