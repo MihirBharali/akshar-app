@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     "kolibri.core.lessons",
     "kolibri.core.analytics",
     "kolibri.core.promotion",
+    "kolibri.core.match_up",
     "rest_framework",
     "django_js_reverse",
     "jsonfield",
