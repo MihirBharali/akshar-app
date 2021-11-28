@@ -3,7 +3,12 @@ from django.utils.timezone import now
 from le_utils.constants import content_kinds
 from le_utils.constants import exercises
 from rest_framework import serializers
+from rest_framework.serializers import Serializer
+from rest_framework.serializers import CharField
+from rest_framework.serializers import IntegerField
+from rest_framework.serializers import ListField
 
+from kolibri.core.api import HexUUIDField
 from kolibri.core.auth.models import FacilityUser
 from kolibri.core.logger.constants.exercise_attempts import MAPPING
 from kolibri.core.logger.models import AttemptLog
@@ -55,12 +60,18 @@ class ContentSessionLogSerializer(KolibriModelSerializer):
             "extra_fields",
             "progress",
         )
-
+class SelectedQuestionsSerializer(Serializer):
+    exercise_id = HexUUIDField(format="hex")
+    # V0 need not have question_id that is why required=False
+    question_id = HexUUIDField(format="hex", required=False)
+    title = CharField()
+    counter_in_exercise = IntegerField()
 
 class ExamLogSerializer(KolibriModelSerializer):
     progress = serializers.SerializerMethodField()
     score = serializers.SerializerMethodField()
     clear_attempt_log = serializers.BooleanField(write_only=True, required=False)
+    selected_question_ids = ListField(child=SelectedQuestionsSerializer(), required=False)
 
     def get_progress(self, obj):
         return obj.attemptlogs.values_list("item").distinct().count()
@@ -84,6 +95,7 @@ class ExamLogSerializer(KolibriModelSerializer):
             "progress",
             "score",
             "completion_timestamp",
+            "selected_question_ids",
             "clear_attempt_log",
         )
         read_only_fields = ("completion_timestamp",)

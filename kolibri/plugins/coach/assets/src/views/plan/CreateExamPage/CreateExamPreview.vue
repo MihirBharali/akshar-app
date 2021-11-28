@@ -15,7 +15,7 @@
       <h1>{{ $tr('preview') }}</h1>
       <h2>{{ coachString('detailsLabel') }}</h2>
       <KGrid>
-        <KGridItem :layout12="{ span: 6 }">
+        <KGridItem :layout12="{ span: 4 }">
           <KTextbox
             ref="title"
             v-model.trim="examTitle"
@@ -27,13 +27,13 @@
             @input="showTitleError = false"
           />
         </KGridItem>
-        <KGridItem :layout12="{ span: 6 }" class="number-input-grid-item">
+        <KGridItem :layout12="{ span: 4 }" class="number-input-grid-item">
           <KTextbox
             ref="numQuest"
             v-model.trim.number="numQuestions"
             type="number"
             :min="1"
-            :max="maxQs"
+            :max="maxQsToShow"
             :label="$tr('numQuestions')"
             :invalid="Boolean(showError && numQuestIsInvalidText)"
             :invalidText="numQuestIsInvalidText"
@@ -50,8 +50,35 @@
             icon="plus"
             aria-hidden="true"
             class="number-btn"
-            :disabled="numQuestions === maxQs"
+            :disabled="numQuestions === maxQsToShow"
             @click="numQuestions += 1"
+          />
+        </KGridItem>
+        <KGridItem :layout12="{ span: 4 }" class="number-input-grid-item">
+          <KTextbox
+            ref="questionPoolSizeInput"
+            v-model.trim.number="questionPoolSize"
+            type="number"
+            :min="1"
+            :max="maxQs"
+            :label="$tr('questionPoolSize')"
+            :invalid="Boolean(showError && questionsToDisplayCountInvalidText)"
+            :invalidText="questionsToDisplayCountInvalidText"
+            class="number-field"
+          />
+          <KIconButton
+            icon="minus"
+            aria-hidden="true"
+            class="number-btn"
+            :disabled="questionPoolSize === 1"
+            @click="questionPoolSize -= 1"
+          />
+          <KIconButton
+            icon="plus"
+            aria-hidden="true"
+            class="number-btn"
+            :disabled="questionPoolSize === maxQs"
+            @click="questionPoolSize += 1"
           />
         </KGridItem>
       </KGrid>
@@ -163,6 +190,9 @@
       maxQs() {
         return MAX_QUESTIONS;
       },
+      maxQsToShow() {
+        return this.questionPoolSize;
+      },
       examTitle: {
         get() {
           return this.$store.state.examCreation.title;
@@ -178,6 +208,17 @@
         set(value) {
           if (value && value >= 1 && value <= this.maxQs) {
             this.$store.commit('examCreation/SET_NUMBER_OF_QUESTIONS', value);
+            this.$store.dispatch('examCreation/updateSelectedQuestions');
+          }
+        },
+      },
+      questionPoolSize: {
+        get() {
+          return this.$store.state.examCreation.questionPoolSize;
+        },
+        set(value) {
+          if (value && value >= 1 && value <= this.maxQs) {
+            this.$store.commit('examCreation/SET_NUMBER_OF_QUESTIONS_TO_DISPLAY', value);
             this.$store.dispatch('examCreation/updateSelectedQuestions');
           }
         },
@@ -203,15 +244,28 @@
         if (this.numQuestions === '') {
           return this.$tr('numQuestionsBetween');
         }
-        if (this.numQuestions < 1 || this.numQuestions > 50) {
+        if (this.numQuestions < 1 || this.numQuestions > this.maxQsToShow) {
           return this.$tr('numQuestionsBetween');
         }
         if (!Number.isInteger(this.numQuestions)) {
           return this.$tr('numQuestionsBetween');
         }
-        if (this.numQuestions > this.availableQuestions) {
+
+        return null;
+      },
+      questionsToDisplayCountInvalidText() {
+        if (this.questionPoolSize === '') {
+          return this.$tr('numQuestionsBetween');
+        }
+        if (this.questionPoolSize < 1 || this.questionPoolSize > this.maxQs) {
+          return this.$tr('numQuestionsBetween');
+        }
+        if (!Number.isInteger(this.questionPoolSize)) {
+          return this.$tr('numQuestionsBetween');
+        }
+        if (this.questionPoolSize > this.availableQuestions) {
           return this.$tr('numQuestionsExceed', {
-            inputNumQuestions: this.numQuestions,
+            inputNumQuestions: this.questionPoolSize,
             maxQuestionsFromSelection: this.availableQuestions,
           });
         }
@@ -283,9 +337,13 @@
         context:
           'This message displays if the learning resource has less questions than the number selected by the coach initially.\n',
       },
+      questionPoolSize: {
+        message: 'Questions pool size',
+        context: 'Indicates the size of the question pool from where the questions will be pulled.',
+      },
       numQuestions: {
         message: 'Number of questions',
-        context: 'Indicates the number of questions a quiz has.',
+        context: 'Indicates the number of questions that the quiz will have.',
       },
     },
   };

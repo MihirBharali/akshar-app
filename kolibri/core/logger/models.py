@@ -317,6 +317,8 @@ class ExamLog(BaseLogModel):
     closed = models.BooleanField(default=False)
     # when was this exam finished?
     completion_timestamp = DateTimeTzField(blank=True, null=True)
+    # the ids of the questions to be displayed to a learner
+    selected_question_ids = JSONField(default=[], blank=True)
 
     def calculate_source_id(self):
         return "{exam_id}:{user_id}".format(exam_id=self.exam_id, user_id=self.user_id)
