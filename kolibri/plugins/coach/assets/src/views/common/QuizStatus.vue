@@ -163,6 +163,7 @@
           :layout12="{ span: 12 }"
         >
           {{ $tr('questionOrderLabel') }}
+
         </KGridItem>
         <KGridItem
           :layout4="{ span: 4 }"
@@ -171,6 +172,52 @@
         >
           {{ orderDescriptionString }}
         </KGridItem>
+
+      </div>
+      <!-- Question Pool size -->
+      <div v-if="hasQuestionPoolSize" class="status-item">
+        <KGridItem
+          class="status-label"
+          :layout4="{ span: 4 }"
+          :layout8="{ span: 4 }"
+          :layout12="layout12Label"
+        >
+          <span> {{ $tr('questionPoolLabel') }}  </span>
+          <CoreInfoIcon
+            :tooltipText="$tr('questionPoolTooltipText')"
+            :iconAriaLabel="$tr('questionPoolTooltipText')"
+          />
+        </KGridItem>
+        <KGridItem
+          :layout4="{ span: 4 }"
+          :layout8="{ span: 4 }"
+          :layout12="{ span: 12 }"
+        >
+          {{ questionPoolSize }}
+        </KGridItem>
+
+      </div>
+      <div v-if="!$isPrint" class="status-item">
+        <KGridItem
+          class="status-label"
+          :layout4="{ span: 4 }"
+          :layout8="{ span: 4 }"
+          :layout12="layout12Label"
+        >
+          <span> {{ $tr('questionNumLabel') }}  </span>
+          <CoreInfoIcon
+            :tooltipText="$tr('questionNumberTooltipText')"
+            :iconAriaLabel="$tr('questionNumberTooltipText')"
+          />
+        </KGridItem>
+        <KGridItem
+          :layout4="{ span: 4 }"
+          :layout8="{ span: 4 }"
+          :layout12="{ span: 12 }"
+        >
+          {{ questionCount }}
+        </KGridItem>
+
       </div>
 
     </KGrid>
@@ -207,6 +254,7 @@
   import { ExamResource } from 'kolibri.resources';
   import commonCoreStrings from 'kolibri.coreVue.mixins.commonCoreStrings';
   import ElapsedTime from 'kolibri.coreVue.components.ElapsedTime';
+  import CoreInfoIcon from 'kolibri.coreVue.components.CoreInfoIcon';
   import { coachStringsMixin } from './commonCoachStrings';
   import Score from './Score';
   import Recipients from './Recipients';
@@ -215,7 +263,14 @@
 
   export default {
     name: 'QuizStatus',
-    components: { Score, Recipients, ElapsedTime, StatusElapsedTime, AverageScoreTooltip },
+    components: {
+      Score,
+      Recipients,
+      ElapsedTime,
+      StatusElapsedTime,
+      AverageScoreTooltip,
+      CoreInfoIcon,
+    },
     mixins: [coachStringsMixin, commonCoreStrings],
     props: {
       className: {
@@ -273,6 +328,18 @@
       },
       layout12Value() {
         return { span: this.$isPrint ? 9 : 12 };
+      },
+      hasQuestionPoolSize() {
+        if (this.exam.question_pool_size !== 0) {
+          return true;
+        }
+        return false;
+      },
+      questionPoolSize() {
+        return this.exam.question_pool_size;
+      },
+      questionCount() {
+        return this.exam.question_count;
       },
     },
     methods: {
@@ -346,6 +413,22 @@
       questionOrderLabel: {
         message: 'Question order',
         context: 'A label for the place where the question order is shown.',
+      },
+      questionPoolLabel: {
+        message: 'Question pool size',
+        context: 'A label for the place where the size of question pool is shown.',
+      },
+      questionNumLabel: {
+        message: 'Number of questions',
+        context: 'A label for the place where the number of question in the quiz is shown.',
+      },
+      questionPoolTooltipText: {
+        message: 'The size of the question pool.',
+        context: 'A label for the place where the size of question pool is shown.',
+      },
+      questionNumberTooltipText: {
+        message: 'The number of questions in the quiz.',
+        context: 'A label for the place where the size of question pool is shown.',
       },
     },
   };

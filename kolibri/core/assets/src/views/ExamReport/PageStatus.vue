@@ -161,19 +161,13 @@
       },
       recreateExamForStudent() {
         this.submitModalOpen = false;
-        //Updates the ExamLog for the learner to reopen the exam for them
-        ExamLogResource.saveModel({
+        //Delete the examLog object so that a new one is created on retake with new set of questions
+        ExamLogResource.deleteModel({
           id: this.examLog.id,
-          data: {
-            exam: this.examLog.exam,
-            user: this.examLog.user,
-            completion_timestamp: null,
-            closed: false,
-            clear_attempt_log: true,
-          },
         })
           .then(() => {
             // Redirect to exam page
+            store.commit('examViewer/SET_QUESTIONS_ANSWERED', 0);
             ExamLogResource.clearCache();
             ExamAttemptLogResource.clearCache();
             this.$router.push(

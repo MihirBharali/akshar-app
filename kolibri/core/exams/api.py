@@ -61,6 +61,7 @@ class ExamViewset(ValuesViewset):
         "id",
         "title",
         "question_count",
+        "question_pool_size",
         "question_sources",
         "seed",
         "active",

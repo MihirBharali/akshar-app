@@ -22,21 +22,26 @@ const getTotalOfQuestions = sumBy(qArray => qArray.length);
  */
 export default function selectQuestions(
   numQuestions,
+  questionPoolSize,
   exerciseIds,
   exerciseTitles,
   questionIdArrays,
   seed
 ) {
+  if (questionPoolSize < numQuestions) {
+    logging.error('numQuestionsToDisplay should not be more than numQuestions');
+  }
+
   if (exerciseIds.length !== questionIdArrays.length) {
     logging.error('exerciseIds and questionIdArrays must have the same length');
   }
   if (exerciseIds.length !== exerciseTitles.length) {
     logging.error('exerciseIds and exerciseTitles must have the same length');
   }
-  if (getTotalOfQuestions(questionIdArrays) < numQuestions) {
+  if (getTotalOfQuestions(questionIdArrays) < questionPoolSize) {
     logging.error('Not enough questions to reach numQuestions');
   }
-  if (numQuestions < exerciseIds.length) {
+  if (questionPoolSize < exerciseIds.length) {
     logging.warn(`Selecting ${numQuestions} questions from ${exerciseIds.length} exercises`);
   }
 
@@ -51,7 +56,7 @@ export default function selectQuestions(
   // fill up the output list
   let output = [];
   let i = 0;
-  while (output.length < numQuestions) {
+  while (output.length < questionPoolSize) {
     const ri = randomIndexes[i];
     // check if we've used up all questions in one exercise
     if (shuffledQuestionIdArrays[ri].length > 0) {

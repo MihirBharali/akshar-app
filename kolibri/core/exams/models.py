@@ -35,6 +35,9 @@ class Exam(AbstractFacilityDataModel):
     # Total number of questions in the exam. Equal to the length of the question_sources array.
     question_count = models.IntegerField()
 
+    # Total number of questions from which 'question_count' questions will be shown to user.
+    question_pool_size = models.IntegerField(null=True)
+
     """
     The `question_sources` field contains different values depending on the 'data_model_version' field.
 

@@ -247,6 +247,7 @@ def serialize_exams(queryset):
                 "question_sources",
                 "data_model_version",
                 "question_count",
+                "question_pool_size",
                 "learners_see_fixed_order",
                 "seed",
                 "date_created",
