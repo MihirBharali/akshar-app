@@ -4,6 +4,7 @@ from rest_framework import routers
 from .api import AdminMatchUpViewset
 from .api import CoachMatchUpViewset
 from .api import LearnerMatchUpViewset
+from .api import MatchUpView
 
 router = routers.SimpleRouter()
 router.register(
@@ -15,6 +16,10 @@ router.register(
 )
 router.register(
     r"learner", LearnerMatchUpViewset, base_name="match-up"
+)
+
+router.register(
+    r"super-admin", MatchUpView, base_name="match-up"
 )
 
 urlpatterns = [url(

@@ -66,6 +66,7 @@ from kolibri.core.api import ValuesViewset
 from kolibri.core.device.utils import allow_guest_access
 from kolibri.core.device.utils import allow_other_browsers_to_connect
 from kolibri.core.device.utils import valid_app_key_on_request
+from kolibri.core.match_up.helpers.user_deletion_helper import update_matchup 
 from kolibri.core.promotion.utils import get_promotion_list
 from kolibri.core.logger.models import UserSessionLog
 from kolibri.core.mixins import BulkCreateMixin
@@ -261,6 +262,13 @@ class FacilityUserViewSet(ValuesViewset):
     def perform_create(self, serializer):
         instance = serializer.save()
         self.set_password_if_needed(instance, serializer)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        # Not a good design but required to trigger automatic reassignment :(
+        update_matchup(user_id = instance.id, facility_id = instance.facility_id)
+        return Response(status=status.HTTP_204_NO_CONTENT)    
 
 
 class ExistingUsernameView(views.APIView):

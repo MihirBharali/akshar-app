@@ -23,18 +23,21 @@ class MatchUpDetails(models.Model):
     )  
     
     #the facility User ID of the mentee
-    mentee_id = UUIDField(null=False, unique=False)
+    mentee_id = UUIDField(null=True, unique=False)
     #the name of the mentee
-    mentee_name = models.CharField(max_length=200)
+    mentee_name = models.CharField(null=True, max_length=200)
     #the facility User ID of the mentor
-    mentor_id = UUIDField(null=False, unique=False)
+    mentor_id = UUIDField(null=True, unique=False)
     #the name of the mentor
-    mentor_name = models.CharField(max_length=200)
+    mentor_name = models.CharField(max_length=200, null=True)
     #the subject for which mathc up is created
     subject = models.CharField(max_length=100)
     #the facility User ID of the supervisor
-    supervisor_id = UUIDField(null=False, unique=False)
+    supervisor_id = UUIDField(unique=False, null=True)
     #the name of the supervisor name
-    supervisor_name = models.CharField(max_length=200)
+    supervisor_name = models.CharField(max_length=200, null=True)
     #the ID of the facility
     facility_id = UUIDField(null=False, unique=False)
+    #if set true, the user will not be part of any matchup
+    #in essence, the user is considered to belong to the fixed unassignment pool
+    keepUnassigned = models.NullBooleanField(null=True, default=False)
