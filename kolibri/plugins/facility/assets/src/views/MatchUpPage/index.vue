@@ -81,6 +81,7 @@
 
   import BottomAppBar from 'kolibri.coreVue.components.BottomAppBar';
   import FilterTextbox from 'kolibri.coreVue.components.FilterTextbox';
+  import commonCoreStrings from 'kolibri.coreVue.mixins.commonCoreStrings';
   import SupervisorCard from './components/SupervisorCard';
   import UnassignedUserContainer from './components/UnassignedUserContainer';
   import {
@@ -93,6 +94,7 @@
   export default {
     name: 'MatchUpPage',
     components: { SupervisorCard, BottomAppBar, UnassignedUserContainer, FilterTextbox },
+    mixins: [commonCoreStrings],
     data() {
       return {
         searchedUnassignedUser: '',
@@ -325,8 +327,9 @@
           },
         };
         this.saveMatchupData({
-          id: this.selectedSubject.value,
           data: dataToSave,
+        }).then(() => {
+          this.$store.dispatch('createSnackbar', this.coreString('changesSavedNotification'));
         });
       },
       handleRemoveMentee(data) {

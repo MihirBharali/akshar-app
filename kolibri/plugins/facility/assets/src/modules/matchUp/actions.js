@@ -14,16 +14,11 @@ export function getMatchupData(store, payload) {
     });
 }
 
-export function saveMatchupData(store, { id, data }) {
+export function saveMatchupData(store, { data }) {
   return AdminMatchupResource.saveModel({
-    id,
     data,
-  })
-    .then(data => {
-      store.commit('SET_MATCH_UP_DATA', _head(data));
-    })
-    .catch(error => {
-      store.commit('SET_MATCH_UP_DATA', {});
-      throw error;
-    });
+  }).catch(error => {
+    store.commit('SET_MATCH_UP_DATA', {});
+    throw error;
+  });
 }
