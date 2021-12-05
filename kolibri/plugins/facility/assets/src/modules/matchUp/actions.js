@@ -17,8 +17,12 @@ export function getMatchupData(store, payload) {
 export function saveMatchupData(store, { data }) {
   return AdminMatchupResource.saveModel({
     data,
-  }).catch(error => {
-    store.commit('SET_MATCH_UP_DATA', {});
-    throw error;
-  });
+  })
+    .then(data => {
+      store.commit('SET_MATCH_UP_DATA', data);
+    })
+    .catch(error => {
+      store.commit('SET_MATCH_UP_DATA', {});
+      throw error;
+    });
 }

@@ -12,7 +12,6 @@
             v-model="selectedSubject"
             :label="$tr('subjectDropdownLabel')"
             :options="subjectOptions"
-            @change="handleSubjectChange"
           />
           <div class="unassigned-users-label">
             {{ $tr('unassignedUsersLabel') }}
@@ -77,7 +76,7 @@
   import _reduce from 'lodash/reduce';
   import _compact from 'lodash/compact';
   import _castArray from 'lodash/castArray';
-  import { mapActions, mapGetters } from 'vuex';
+  import { mapActions, mapGetters, mapState } from 'vuex';
 
   import BottomAppBar from 'kolibri.coreVue.components.BottomAppBar';
   import FilterTextbox from 'kolibri.coreVue.components.FilterTextbox';
@@ -97,6 +96,11 @@
     mixins: [commonCoreStrings],
     data() {
       return {
+        matchUpDetails: [],
+        unassignedSupervisorList: [],
+        mergedMatchUpDetails: [],
+        unassignedMentors: [],
+        unassignedMentees: [],
         searchedUnassignedUser: '',
         selectedSubject: {},
         subjectOptions: [],
@@ -105,28 +109,10 @@
       };
     },
     computed: {
-      ...mapGetters('matchup', ['matchupData']),
+      ...mapState('matchup', ['matchupData', 'originalMatchupData']),
       ...mapGetters(['activeFacilityId']),
-      facilityMatchupData() {
-        return this.matchupData;
-      },
       matchupDataAvailable() {
         return !_isEmpty(this.matchupData) && !_isNil(this.matchupData);
-      },
-      matchUpDetails() {
-        return _get(this.facilityMatchupData, ['match_up_details'], []);
-      },
-      unassignedSupervisorList() {
-        return _get(this.facilityMatchupData, ['unassigned_pool', 'supervisor_list'], []);
-      },
-      mergedMatchUpDetails() {
-        return this.getMergedMatchupData(this.matchUpDetails, this.unassignedSupervisorList);
-      },
-      unassignedMentors() {
-        return _get(this.facilityMatchupData, ['unassigned_pool', 'mentor_list'], []);
-      },
-      unassignedMentees() {
-        return _get(this.facilityMatchupData, ['unassigned_pool', 'mentee_list'], []);
       },
       filteredUnassignedMentors() {
         if (_isEmpty(this.searchedUnassignedUser)) return this.unassignedMentors;
@@ -141,13 +127,8 @@
         );
       },
     },
-    created() {
-      this.subjectOptions = _reduce(
-        SUBJECTS,
-        (acc, { label = '', value = '' } = {}) => [...acc, { label, value }],
-        []
-      );
-      this.selectedSubject = _find(this.subjectOptions, { value: DEFAULT_SELECTED_SUBJECT });
+    mounted() {
+      this.init();
     },
     methods: {
       ...mapActions('matchup', ['getMatchupData', 'saveMatchupData']),
@@ -159,6 +140,27 @@
         }));
 
         return [...initialData, ...newData];
+      },
+      init(subjectValue = DEFAULT_SELECTED_SUBJECT) {
+        const matchupData = _cloneDeep(this.matchupData);
+        this.matchUpDetails = _get(matchupData, ['match_up_details'], []);
+        this.unassignedSupervisorList = _get(
+          matchupData,
+          ['unassigned_pool', 'supervisor_list'],
+          []
+        );
+        this.mergedMatchUpDetails = this.getMergedMatchupData(
+          this.matchUpDetails,
+          this.unassignedSupervisorList
+        );
+        this.unassignedMentors = _get(matchupData, ['unassigned_pool', 'mentor_list'], []);
+        this.unassignedMentees = _get(matchupData, ['unassigned_pool', 'mentee_list'], []);
+        this.subjectOptions = _reduce(
+          SUBJECTS,
+          (acc, { label = '', value = '' } = {}) => [...acc, { label, value }],
+          []
+        );
+        this.selectedSubject = _find(this.subjectOptions, { value: subjectValue });
       },
       handleSupervisorMentorMatchupUpdate(data) {
         const {
@@ -367,21 +369,18 @@
         }
       },
       handleResetMatchupData() {
-        this.selectedSubject &&
-          this.selectedSubject.value &&
-          this.getMatchupData({
-            subject: this.selectedSubject.value,
-            facility: this.activeFacilityId,
-          }).catch(error => {
-            this.$store.dispatch('handleApiError', error);
-          });
+        this.init(this.selectedSubject.value);
+        this.$store.dispatch('createSnackbar', this.$tr('resetMessage'));
       },
-      handleSubjectChange(evt) {
-        this.getMatchupData({ subject: evt.value, facility: this.activeFacilityId }).catch(
-          error => {
-            this.$store.dispatch('handleApiError', error);
-          }
-        );
+    },
+    watch: {
+      selectedSubject(subject, oldSubject) {
+        if (subject.value !== oldSubject.value)
+          this.getMatchupData({ subject: subject.value, facility: this.activeFacilityId })
+            .then(() => this.init(subject.value))
+            .catch(error => {
+              this.$store.dispatch('handleApiError', error);
+            });
       },
     },
     $trs: {
@@ -405,6 +404,7 @@
       unassignedMentorsLabel: { message: 'Mentors' },
       unassignedMenteesLabel: { message: 'Mentees' },
       searchForUser: { message: 'Search users' },
+      resetMessage: { message: 'Changes reset' },
     },
   };
 
