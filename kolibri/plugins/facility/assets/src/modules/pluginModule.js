@@ -7,6 +7,7 @@ import facilityConfig from './facilityConfig';
 import userManagement from './userManagement';
 import manageCSV from './manageCSV';
 import importCSV from './importCSV';
+import matchup from './matchUp';
 
 export default {
   state() {
@@ -95,6 +96,10 @@ export default {
           name: PageNames.IMPORT_CSV_PAGE,
           params,
         },
+        MatchUpPage: {
+          name: PageNames.MATCH_UP_PAGE,
+          params,
+        },
       };
     },
   },
@@ -106,5 +111,6 @@ export default {
     facilityConfig,
     manageCSV,
     importCSV,
+    matchup,
   },
 };

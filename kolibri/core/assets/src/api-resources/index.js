@@ -44,3 +44,4 @@ export { default as PingbackNotificationResource } from './pingbackNotification'
 export { default as PingbackNotificationDismissedResource } from './pingbackNotificationDismissed';
 export { default as PortalResource } from './portal';
 export { default as PromotionQueueResource } from './promotionQueueResource';
+export { default as AdminMatchupResource } from './matchup';

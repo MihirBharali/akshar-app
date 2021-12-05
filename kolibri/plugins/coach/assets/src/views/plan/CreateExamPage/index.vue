@@ -408,7 +408,7 @@
         if (this.availableQuestions === 0) {
           return this.$tr('noneSelected');
         }
-       
+
         return null;
       },
       questionPoolSizeInvalidText() {
@@ -421,7 +421,7 @@
         if (!Number.isInteger(this.numQuestionsInPool)) {
           return this.$tr('numQuestionsBetween');
         }
-         if (this.availableQuestions == 0 || this.availableQuestions == null) {
+        if (this.availableQuestions == 0 || this.availableQuestions == null) {
           return this.$tr('numQuestionsExceedNoExercises', {
             inputNumQuestions: this.numQuestionsInPool,
             maxQuestionsFromSelection: 0,

@@ -8,7 +8,7 @@ from .api import MatchUpView
 
 router = routers.SimpleRouter()
 router.register(
-    r"admin", AdminMatchUpViewset, base_name="match-up"
+    r"admin", AdminMatchUpViewset, base_name="admin"
 )
 
 router.register(

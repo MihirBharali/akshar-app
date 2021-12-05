@@ -10,6 +10,7 @@ import UserPage from './views/UserPage';
 import UserCreatePage from './views/UserCreatePage';
 import UserEditPage from './views/UserEditPage';
 import AllFacilitiesPage from './views/AllFacilitiesPage';
+import MatchUpPage from './views/MatchUpPage';
 import { showClassesPage } from './modules/classManagement/handlers';
 import { showClassEditPage } from './modules/classEditManagement/handlers';
 import { showUserPage } from './modules/userManagement/handlers';
@@ -18,6 +19,7 @@ import {
   showLearnerClassEnrollmentPage,
   showCoachClassAssignmentPage,
 } from './modules/classAssignMembers/handlers';
+import { showMatchUpPage } from './modules/matchUp/handlers';
 import { PageNames } from './constants';
 
 export default [
@@ -111,6 +113,14 @@ export default [
     path: '/:facility_id?/settings',
     handler: toRoute => {
       showFacilityConfigPage(store, toRoute);
+    },
+  },
+  {
+    name: PageNames.MATCH_UP_PAGE,
+    component: MatchUpPage,
+    path: '/:facility_id?/match-up',
+    handler: toRoute => {
+      showMatchUpPage(store, toRoute);
     },
   },
   {
