@@ -19,6 +19,14 @@ export default function filterUsersByNames(users, searchTerm) {
         name: 'learner_name',
         weight: 3,
       },
+      {
+        name: 'mentee',
+        weight: 4,
+      },
+      {
+        name: 'mentor',
+        weight: 5,
+      },
     ],
   });
   if (searchTerm) {

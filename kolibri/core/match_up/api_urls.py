@@ -12,10 +12,10 @@ router.register(
 )
 
 router.register(
-    r"coach", CoachMatchUpViewset, base_name="match-up"
+    r"coach", CoachMatchUpViewset, base_name="coach"
 )
 router.register(
-    r"learner", LearnerMatchUpViewset, base_name="match-up"
+    r"learner", LearnerMatchUpViewset, base_name="learner"
 )
 
 router.register(
