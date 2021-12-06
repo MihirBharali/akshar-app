@@ -15,9 +15,10 @@ Processes a ``PUT`` request to update the matchups for a given
 subject and facility
 '''
 @transaction.atomic
-def update_matchups(request, subject):
+def update_matchups(request):
   print("Processing matchup update request.")
   facility_id = request['facility_id']
+  subject = request['subject']
   # this list ``existing_supervisors`` is used to track supervisors which are not in the Request payload
   # All matchups under the supervisors that remain in the list after processing of the request is completed 
   # will be deleted

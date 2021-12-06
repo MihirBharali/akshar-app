@@ -41,6 +41,16 @@
         style="top: 0; width: 24px; height: 24px;"
       />
     </NavbarLink>
+    <NavbarLink
+      :title="$tr('match_up')"
+      :link="$store.getters.facilityPageLinks.MatchUpPage"
+    >
+      <KIcon
+        icon="group"
+        :color="$themeTokens.textInverted"
+        style="top: 0; width: 24px; height: 24px;"
+      />
+    </NavbarLink>
   </Navbar>
 
 </template>
@@ -66,6 +76,10 @@
       },
       settings: {
         message: 'Settings',
+        context: "Title of tab in 'Facility' section.",
+      },
+      match_up: {
+        message: 'Match Up',
         context: "Title of tab in 'Facility' section.",
       },
     },

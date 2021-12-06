@@ -12,7 +12,7 @@ from .helpers.learner_match_helper import get_matchup_for_learner
 
 
 
-class AdminMatchUpViewset(viewsets.GenericViewSet, ListModelMixin, UpdateModelMixin, DestroyModelMixin):
+class AdminMatchUpViewset(viewsets.GenericViewSet, ListModelMixin, CreateModelMixin, DestroyModelMixin):
     permission_classes = (IsAuthenticated,)
     queryset = MatchUpDetails.objects.all()
     serializer_class = AdminMatchUpPayloadSerializer
@@ -35,9 +35,9 @@ class AdminMatchUpViewset(viewsets.GenericViewSet, ListModelMixin, UpdateModelMi
         result.append(get_matchup_for_admin(facility_id, subject))   
         return Response(result, status=status.HTTP_200_OK)
     
-    def update(self, request, subject):
-        update_matchups(request.data, subject)
-        return Response("Success", status=status.HTTP_200_OK)      
+    def create(self, request):
+        update_matchups(request.data)
+        return Response(request.data, status=status.HTTP_200_OK)      
 
 
 class CoachMatchUpViewset(viewsets.GenericViewSet, RetrieveModelMixin):
