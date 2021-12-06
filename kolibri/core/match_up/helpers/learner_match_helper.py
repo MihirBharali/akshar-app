@@ -1,22 +1,9 @@
 from ..models import MatchUpDetails
 from django.db.models import Q
-from kolibri.core.auth.models import FacilityUser, Classroom
 
-def get_matchup_for_learner(user_id):
+def get_matchup_for_learner(user_id, facility_id):
 
-    classroom_query = Classroom.objects.filter(name__iregex=r'^Math\s[0-9]+$').values_list('id', flat=True)
-    classrooms = list(classroom_query)
-    print(classrooms)
-    
-    print(FacilityUser.objects.filter(Q(memberships__collection__in=classrooms)).distinct().values(
-        "id",
-        "username",
-        "full_name",
-        "memberships__collection__id",
-        "memberships__collection__name",
-    ))
-   
-    match_ups = __get_matchups(user_id)
+    match_ups = get_matchups(user_id, facility_id)
     '''
       Group the matchups by subject
     '''
@@ -29,7 +16,7 @@ def get_matchup_for_learner(user_id):
 
     response = []
     for subject, pairs in match_up_by_subjects.items():
-        isMentor = __isMentor(pairs, user_id)
+        isMentor = is_mentor(pairs, user_id)
         if isMentor:
             mentee_list = []
             for pair in pairs:
@@ -67,15 +54,15 @@ def get_matchup_for_learner(user_id):
     return response
 
 
-def __isMentor(pairs, user_id):
+def is_mentor(pairs, user_id):
     if pairs[0]['mentor_id'] == user_id:
         return True
     return False        
 
-def __get_matchups(user_id):
+def get_matchups(user_id, facility_id):
     return MatchUpDetails.objects.filter(
-            Q(mentee_id = user_id) 
-            | Q(mentor_id = user_id)).distinct().values(
+             Q(mentee_id = user_id, facility_id = facility_id, keepUnassigned = False) 
+            | Q(mentor_id = user_id,facility_id = facility_id, keepUnassigned = False)).distinct().values(
                 "id",
                 "mentee_id",
                 "mentee_name",
