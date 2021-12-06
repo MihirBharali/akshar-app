@@ -18,18 +18,11 @@ class AdminMatchUpViewset(viewsets.GenericViewSet, ListModelMixin, CreateModelMi
     serializer_class = AdminMatchUpPayloadSerializer
     lookup_field = 'subject'
     
-
-    def __get_query_param_cache(self, value):
-        if value is None or value.lower() == 'true':
-           return True
-        if value.lower() == 'false':
-            return False  
-
     def list(self, request):
         subject = request.GET.get('subject', None)
         facility_id = request.GET.get("facility")
-        if subject is None:
-           return Response("Mandatory param: subject is missing", status=status.HTTP_400_BAD_REQUEST)
+        if subject is None or facility_id is None:
+           return Response("Mandatory param is missing", status=status.HTTP_400_BAD_REQUEST)
 
         result = []
         result.append(get_matchup_for_admin(facility_id, subject))   
@@ -48,7 +41,10 @@ class CoachMatchUpViewset(viewsets.GenericViewSet, RetrieveModelMixin):
     
     def retrieve(self, request, *args, **kwargs):
         user_id = kwargs.get('user')
-        output = get_matchup_for_coach(user_id=user_id)
+        facility_id = request.GET.get("facility")
+        if facility_id is None:
+            return Response("Mandatory param is missing", status=status.HTTP_400_BAD_REQUEST)
+        output = get_matchup_for_coach(user_id, facility_id)
         return Response(output, status=status.HTTP_200_OK)
 
 
@@ -60,7 +56,10 @@ class LearnerMatchUpViewset(viewsets.GenericViewSet, RetrieveModelMixin):
 
     def retrieve(self, request, *args, **kwargs):
         user_id = kwargs.get('user')
-        output = get_matchup_for_learner(user_id=user_id)
+        facility_id = request.GET.get("facility")
+        if facility_id is None:
+            return Response("Mandatory param is missing", status=status.HTTP_400_BAD_REQUEST)
+        output = get_matchup_for_learner(user_id, facility_id)
         return Response(output, status=status.HTTP_200_OK)
 
 # SuperAdmin APIs

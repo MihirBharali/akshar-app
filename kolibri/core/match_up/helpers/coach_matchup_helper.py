@@ -1,7 +1,9 @@
 from ..models import MatchUpDetails
 
-def get_matchup_for_coach(user_id):
-    match_ups = MatchUpDetails.objects.filter(supervisor_id = user_id).distinct().values(
+def get_matchup_for_coach(user_id, facility_id):
+    match_ups = MatchUpDetails.objects.filter(supervisor_id = user_id,
+     facility_id = facility_id,
+     keepUnassigned = False).distinct().values(
                 "mentee_id",
                 "mentee_name",
                 "mentor_id",
