@@ -33,6 +33,7 @@ export const ClassesPageNames = {
   EXAM_REPORT_VIEWER: 'EXAM_REPORT_VIEWER',
   LESSON_RESOURCE_VIEWER: 'LESSON_RESOURCE_VIEWER',
   ALL_NOTIFICATIONS: 'ALL_NOTIFICATIONS',
+  MATCHUP_DETAILS: 'MATCHUP_DETAILS',
 };
 
 export const pageNameToModuleMap = {
@@ -43,6 +44,7 @@ export const pageNameToModuleMap = {
   [ClassesPageNames.LESSON_PLAYLIST]: 'lessonPlaylist',
   [ClassesPageNames.LESSON_RESOURCE_VIEWER]: 'lessonPlaylist/resource',
   [ClassesPageNames.ALL_NOTIFICATIONS]: 'notifications',
+  [ClassesPageNames.MATCHUP_DETAILS]: 'matchup',
   [PageNames.TOPICS_ROOT]: 'topicsRoot',
   [PageNames.RECOMMENDED]: 'recommended',
   [PageNames.TOPICS_CHANNEL]: 'topicsTree',

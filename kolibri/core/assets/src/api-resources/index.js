@@ -46,3 +46,4 @@ export { default as PortalResource } from './portal';
 export { default as PromotionQueueResource } from './promotionQueueResource';
 export { default as AdminMatchupResource } from './matchup';
 export { default as CoachMatchupResource } from './coachmatchup';
+export { default as LearnerMatchupResource } from './learnermatchup';

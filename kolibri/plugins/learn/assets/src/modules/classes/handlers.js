@@ -1,3 +1,4 @@
+import { LearnerMatchupResource } from 'kolibri.resources';
 import { LearnerClassroomResource } from '../../apiResources';
 import { ClassesPageNames } from '../../constants';
 
@@ -9,6 +10,7 @@ export function showAllClassesPage(store) {
         store.commit('SET_PAGE_NAME', ClassesPageNames.ALL_CLASSES);
         store.commit('classes/SET_LEARNER_CLASSROOMS', classrooms);
         store.commit('classes/SET_LEARNER_NOTIFICATIONS', getNotifications(classrooms));
+        store.commit('classes/SET_MATCHUP_DATA', getMatchupData(store));
         store.dispatch('notLoading');
       })
       .catch(error => {
@@ -39,6 +41,17 @@ export function showAllNotifications(store) {
         return store.dispatch('handleError', error);
       });
   });
+}
+
+export function getMatchupData(store) {
+  return LearnerMatchupResource.fetchModel({
+    id: store.getters.currentUserId,
+    getParams: { facility: store.getters.currentFacilityId },
+  })
+    .then(matchups => {
+      store.commit('classes/SET_MATCHUP_DATA', matchups);
+    })
+    .catch(error => store.dispatch('handleApiError', error));
 }
 
 function getNotifications(classrooms) {
@@ -80,6 +93,29 @@ export function showAllLearnersInClass(store) {
           return store.dispatch('handleApiError', error);
         }
 
+        // Allows triggering of AuthMessage.vue
+        return store.dispatch('handleError', error);
+      });
+  });
+}
+
+export function showMatchupDetailsPage(store, subject) {
+  return store.dispatch('loading').then(() => {
+    return LearnerMatchupResource.fetchModel({
+      id: store.getters.currentUserId,
+      getParams: { facility: store.getters.currentFacilityId },
+    })
+      .then(matchups => {
+        let list = [];
+        for (var key in matchups) {
+          list.push(matchups[key]);
+        }
+        store.commit('classes/SET_MATCHUP_DATA', matchups);
+        store.commit('SET_PAGE_NAME', ClassesPageNames.MATCHUP_DETAILS);
+        store.dispatch('notLoading');
+      })
+      .catch(error => {
+        store.dispatch('handleApiError', error);
         // Allows triggering of AuthMessage.vue
         return store.dispatch('handleError', error);
       });

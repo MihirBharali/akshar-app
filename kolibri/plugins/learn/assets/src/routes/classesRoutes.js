@@ -3,7 +3,11 @@ import router from 'kolibri.coreVue.router';
 import { ClassesPageNames, PageNames } from '../constants';
 import { showLessonPlaylist, showLessonResourceViewer } from '../modules/lessonPlaylist/handlers';
 import { showClassAssignmentsPage } from '../modules/classAssignments/handlers';
-import { showAllClassesPage, showAllNotifications } from '../modules/classes/handlers';
+import {
+  showAllClassesPage,
+  showAllNotifications,
+  showMatchupDetailsPage,
+} from '../modules/classes/handlers';
 import { showExam } from '../modules/examViewer/handlers';
 import { showExamReport } from '../modules/examReportViewer/handlers';
 
@@ -82,6 +86,14 @@ export default [
     name: ClassesPageNames.ALL_NOTIFICATIONS,
     handler() {
       return noClassesGuard() || showAllNotifications(store);
+    },
+  },
+  {
+    name: ClassesPageNames.MATCHUP_DETAILS,
+    path: '/matchup/:subject',
+    handler: toRoute => {
+      const { subject } = toRoute.params;
+      return noClassesGuard() || showMatchupDetailsPage(store, subject);
     },
   },
 ];
