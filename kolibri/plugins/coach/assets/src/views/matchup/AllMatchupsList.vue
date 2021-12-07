@@ -1,6 +1,6 @@
 <template>
 
-  <KPageContainer>
+  <KPageContainer class="container">
     <h2>
       <KLabeledIcon icon="device" :label="$tr('learnersMatchupHeader')" /> 
     </h2>
@@ -142,7 +142,7 @@
         context: 'Title for learners matchup section',
       },
       searchboxPlaceholderText: {
-        message: 'Search for mentee or mentor..',
+        message: 'Find students..',
         context: 'Search box placeholder',
       },
       searchNoResultText: {
@@ -178,6 +178,10 @@
   }
   .type-filter {
     margin-bottom: 0;
+  }
+
+  .container {
+    width: 50%;
   }
 
 </style>
