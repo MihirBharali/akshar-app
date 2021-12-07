@@ -32,12 +32,3 @@ export function notificationListLink() {
     name: ClassesPageNames.ALL_NOTIFICATIONS,
   };
 }
-
-export function matchupDetailsLink(subject) {
-  return {
-    name: ClassesPageNames.MATCHUP_DETAILS,
-    params: {
-      subject,
-    },
-  };
-}

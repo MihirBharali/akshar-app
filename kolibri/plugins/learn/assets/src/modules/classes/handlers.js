@@ -10,7 +10,7 @@ export function showAllClassesPage(store) {
         store.commit('SET_PAGE_NAME', ClassesPageNames.ALL_CLASSES);
         store.commit('classes/SET_LEARNER_CLASSROOMS', classrooms);
         store.commit('classes/SET_LEARNER_NOTIFICATIONS', getNotifications(classrooms));
-        store.commit('classes/SET_MATCHUP_DATA', getMatchupData(store));
+        // store.commit('classes/SET_MATCHUP_DATA', getMatchupData(store));
         store.dispatch('notLoading');
       })
       .catch(error => {
@@ -99,17 +99,13 @@ export function showAllLearnersInClass(store) {
   });
 }
 
-export function showMatchupDetailsPage(store, subject) {
+export function showMatchupDetailsPage(store) {
   return store.dispatch('loading').then(() => {
     return LearnerMatchupResource.fetchModel({
       id: store.getters.currentUserId,
       getParams: { facility: store.getters.currentFacilityId },
     })
       .then(matchups => {
-        let list = [];
-        for (var key in matchups) {
-          list.push(matchups[key]);
-        }
         store.commit('classes/SET_MATCHUP_DATA', matchups);
         store.commit('SET_PAGE_NAME', ClassesPageNames.MATCHUP_DETAILS);
         store.dispatch('notLoading');

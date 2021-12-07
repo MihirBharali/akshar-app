@@ -52,3 +52,15 @@ export const pageNameToModuleMap = {
   [PageNames.TOPICS_TOPIC]: 'topicsTree',
   [PageNames.RECOMMENDED_CONTENT]: 'topicsTree',
 };
+
+export const LEARNER_ROLES = {
+  MENTOR: 'Mentor',
+  MENTEE: 'Mentee',
+};
+
+export const LEARNER_MATCHUP_TABLE_COLUMNS = {
+  SUBJECT: 'subject',
+  MENTOR: 'mentor',
+  MENTEE: 'mentee',
+  SUPERVISOR: 'supervisor',
+};

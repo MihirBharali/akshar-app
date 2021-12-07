@@ -46,7 +46,7 @@
       :link="$store.getters.facilityPageLinks.MatchUpPage"
     >
       <KIcon
-        icon="group"
+        icon="device"
         :color="$themeTokens.textInverted"
         style="top: 0; width: 24px; height: 24px;"
       />

@@ -101,7 +101,6 @@
       },
       learnersListFilteredByDropdown() {
         if (this.subjectFilter.value == 'All') {
-          console.log(this.listOfMatchups());
           return this.listOfMatchups();
         }
         return this.listOfMatchups().filter(item => item['subject'] == this.subjectFilter.value);
@@ -124,7 +123,6 @@
             matchupList.push(matchup);
           }
         }
-        console.log(matchupList);
         return matchupList;
       },
     },
