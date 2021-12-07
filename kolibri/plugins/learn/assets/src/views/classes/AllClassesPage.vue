@@ -25,6 +25,20 @@
         <NotificationBlock />
 
       </div>
+      <div v-if="hasMatchups">
+        <h2>
+          <KLabeledIcon icon="device" :label="$tr('yourMatchupsHeader')" />
+        </h2>
+        <CardGrid v-if="matchupSubjects.length > 0" :gridType="2">
+          <CardLink
+            v-for="subject in matchupSubjects"
+            :key="subject"
+            :to="matchupDetailsLink(subject)"
+          >
+            {{ subject }} 
+          </CardLink>
+        </CardGrid>
+      </div>
     </div>
 
 
@@ -42,7 +56,7 @@
   import CardGrid from '../cards/CardGrid.vue';
   import CardLink from '../cards/CardLink.vue';
   import NotificationBlock from '../cards/NotificationBlock.vue';
-  import { classAssignmentsLink } from './classPageLinks';
+  import { classAssignmentsLink, matchupDetailsLink } from './classPageLinks';
 
   export default {
     name: 'AllClassesPage',
@@ -60,20 +74,41 @@
     mixins: [commonCoreStrings],
     computed: {
       ...mapGetters(['isUserLoggedIn']),
-      ...mapState('classes', ['classrooms', 'notifications']),
+      ...mapState('classes', ['classrooms', 'notifications', 'matchups']),
       hasNotifications() {
         if (this.notifications === undefined) {
           return false;
         }
         return Object.keys(this.notifications).length > 0;
       },
+      hasMatchups() {
+        console.log(this.matchups);
+        if (this.matchups === undefined) {
+          return false;
+        }
+        return Object.keys(this.matchups).length > 0;
+      },
+      matchupSubjects() {
+        let subjects = [];
+        for (var i in this.matchups) {
+          if (subjects.indexOf(this.matchups[i]['subject'] == -1)) {
+            let subject = this.matchups[i]['subject'];
+            if (subject !== undefined) {
+              subjects.push(subject);
+            }
+          }
+        }
+        return subjects;
+      },
     },
     methods: {
       classAssignmentsLink,
+      matchupDetailsLink,
     },
     $trs: {
       yourClassesHeader: 'Your classes',
       yourNotificationsHeader: 'Your notifications',
+      yourMatchupsHeader: 'Your matchups',
       noClasses: {
         message: 'You are not enrolled in any classes',
         context:

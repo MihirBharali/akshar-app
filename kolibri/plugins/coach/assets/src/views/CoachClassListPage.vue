@@ -64,6 +64,11 @@
       </CoreTable>
     </KPageContainer>
     <PromotionNotification role="Coach" :promotions="promotionsList" /> 
+    <div v-if="hasMatchupData">
+      <AllMatchupsList />
+    </div>
+
+
   </CoreBase>
 
 </template>
@@ -77,14 +82,15 @@
   import urls from 'kolibri.urls';
   import PromotionNotification from 'kolibri.coreVue.components.PromotionNotification';
   import commonCoach from './common';
+  import AllMatchupsList from './matchup/AllMatchupsList.vue';
 
   export default {
     name: 'CoachClassListPage',
-    components: { PromotionNotification },
+    components: { PromotionNotification, AllMatchupsList },
     mixins: [commonCoach, commonCoreStrings],
     computed: {
       ...mapGetters(['isAdmin', 'isClassCoach', 'isFacilityCoach', 'userIsMultiFacilityAdmin']),
-      ...mapState(['classList']),
+      ...mapState(['classList', 'matchups']),
       // Message that shows up when state.classList is empty
       emptyStateDetails() {
         if (this.isClassCoach) {
@@ -107,6 +113,13 @@
           }
         }
         return promotions;
+      },
+      hasMatchupData() {
+        let matchupDetails = this.matchups['match_up_details'];
+        if (matchupDetails != undefined && Object.keys(matchupDetails).length > 0) {
+          return true;
+        }
+        return false;
       },
       createClassUrl() {
         const facilityUrl = urls['kolibri:kolibri.plugins.facility:facility_management'];

@@ -74,6 +74,7 @@
   import AllClassesPage from './classes/AllClassesPage';
   import ClassAssignmentsPage from './classes/ClassAssignmentsPage';
   import AllNotificationsPage from './classes/AllNotificationsPage';
+  import LearnerMatchupPage from './LearnerMatchupPage';
   import LessonPlaylistPage from './classes/LessonPlaylistPage';
   import LessonResourceViewer from './classes/LessonResourceViewer';
   import ActionBarSearchBox from './ActionBarSearchBox';
@@ -96,6 +97,7 @@
     [ClassesPageNames.LESSON_PLAYLIST]: LessonPlaylistPage,
     [ClassesPageNames.LESSON_RESOURCE_VIEWER]: LessonResourceViewer,
     [ClassesPageNames.ALL_NOTIFICATIONS]: AllNotificationsPage,
+    [ClassesPageNames.MATCHUP_DETAILS]: LearnerMatchupPage,
   };
 
   export default {

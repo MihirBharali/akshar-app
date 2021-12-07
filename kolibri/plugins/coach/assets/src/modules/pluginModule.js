@@ -1,4 +1,4 @@
-import { ClassroomResource } from 'kolibri.resources';
+import { ClassroomResource, CoachMatchupResource } from 'kolibri.resources';
 import logger from 'kolibri.lib.logging';
 import { pageNameToModuleMap, PageNames } from '../constants';
 import { LessonsPageNames } from '../constants/lessonsConstants';
@@ -23,6 +23,7 @@ export default {
       busy: false,
       classList: [],
       pageName: '',
+      matchups: {},
       toolbarRoute: {},
       toolbarTitle: '',
     };
@@ -40,12 +41,17 @@ export default {
     SET_TOOLBAR_ROUTE(state, toolbarRoute) {
       state.toolbarRoute = toolbarRoute;
     },
+    SET_MATCHUPS(state, matchups) {
+      state.matchups = matchups;
+    },
   },
   getters: {
     classListPageEnabled(state) {
       // If the number of classes is exactly 1, then redirect to its home page,
       // otherwise show the whole class list
-      return state.classList.length !== 1;
+      // update: 6th Dec 21: Forcing to display the class list page since matchup
+      // details will be on the class list page only.
+      return true;
     },
     userIsAuthorizedForCoach(state, getters, rootState) {
       if (getters.isSuperuser) {
@@ -64,6 +70,17 @@ export default {
       })
         .then(classrooms => {
           store.commit('SET_CLASS_LIST', classrooms);
+          store.dispatch('setMatchups');
+        })
+        .catch(error => store.dispatch('handleApiError', error));
+    },
+    setMatchups(store) {
+      return CoachMatchupResource.fetchModel({
+        id: store.getters.currentUserId,
+        getParams: { facility: store.getters.currentFacilityId },
+      })
+        .then(matchups => {
+          store.commit('SET_MATCHUPS', matchups);
         })
         .catch(error => store.dispatch('handleApiError', error));
     },
