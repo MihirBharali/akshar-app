@@ -1,7 +1,7 @@
 import { mapState } from 'vuex';
 import commonCoreStrings from 'kolibri.coreVue.mixins.commonCoreStrings';
 import { ClassesPageNames } from '../../constants';
-import { classAssignmentsLink, lessonPlaylistLink, notificationListLink } from './classPageLinks';
+import { classAssignmentsLink, lessonPlaylistLink } from './classPageLinks';
 
 // A mixin intended for use inside of learn plugin breadcrumbs
 export default {
@@ -36,27 +36,11 @@ export default {
           link: classAssignmentsLink(this.currentClassroom.id),
         },
       ];
-      const matchupDetailsCrumbs = [
-        // Link to All Classes Page
-        {
-          text: this.coreString('classesLabel'),
-          link: {
-            name: ClassesPageNames.ALL_CLASSES,
-          },
-        },
-        {
-          // Link to Classroom Assignments page
-          text: 'Matchup',
-          link: classAssignmentsLink(this.currentClassroom.id),
-        },
-      ];
       switch (this.pageName) {
         case ClassesPageNames.CLASS_ASSIGNMENTS:
           return defaultCrumbs;
         case ClassesPageNames.ALL_NOTIFICATIONS:
           return notificationCrumbs;
-        case ClassesPageNames.MATCHUP_DETAILS:
-          return matchupDetailsCrumbs;
         case ClassesPageNames.LESSON_PLAYLIST:
           return [
             ...defaultCrumbs,
@@ -76,7 +60,6 @@ export default {
         ClassesPageNames.CLASS_ASSIGNMENTS,
         ClassesPageNames.LESSON_PLAYLIST,
         ClassesPageNames.ALL_NOTIFICATIONS,
-        ClassesPageNames.MATCHUP_DETAILS,
       ].includes(this.pageName);
     },
     ...mapState({

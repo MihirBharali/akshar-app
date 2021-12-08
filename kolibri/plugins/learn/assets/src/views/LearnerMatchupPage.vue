@@ -1,131 +1,125 @@
 <template>
 
   <KPageContainer>
-    <h2>
-      <KLabeledIcon icon="device" :label="$tr('learnersMatchupHeader')" /> 
-    </h2>
-    <p> {{ subheaderText }}</p>
-    <ul>
-      <li> {{ subjectText }} </li>
-      <li> {{ roleText }} </li>
-    </ul>
-
-    <CoreTable>
-      <template #headers>
-        <th> {{ supervisorLabel }} </th>
-        <th v-if="isMentor">
-          {{ menteeLabel }}
-        </th>
-        <th v-else>
-          {{ mentorLabel }}
-        </th> 
-      </template>
-      <template #tbody>
-        <tbody>
-          <tr>
-            <td>
-              {{ supervisor }}
-            </td>
-            <td v-if="isMentor">
-              <ul>
-                <li v-for="mentee in menteeList" :key="mentee">
-                  {{ mentee }}
-
-
-                </li>
-              </ul>
-            </td>    
-            <td v-else>
-              {{ mentor }}
-            </td>
-          </tr>
-        </tbody>
-      </template>
-    </CoreTable>    
-
-  </KPageContainer>    
+    <h1>
+      <KLabeledIcon icon="device" :label="$tr('learnersMatchupHeader')" />
+    </h1>
+    <p>{{ $tr('learnersMatchupSubheader') }}</p>
+    <br>
+    <h2>{{ $tr('mentorTableHeader') }}</h2>
+    <p v-if="!hasMentors">
+      {{ $tr('noMentorLabel') }}
+    </p>
+    <LearnerMatchupTable
+      v-else
+      :tableHeaders="getMentorTableColumnHeaders()"
+      :tableBodyData="mentorList"
+    />
+    <br>
+    <h2>{{ $tr('menteeTableHeader') }}</h2>
+    <p v-if="!hasMentees">
+      {{ $tr('noMenteeLabel') }}
+    </p>
+    <LearnerMatchupTable
+      v-else
+      :tableHeaders="getMenteeTableColumnHeaders()"
+      :tableBodyData="menteeList"
+    />
+  </KPageContainer>
 
 </template>
 <script>
 
+  import _map from 'lodash/map';
+  import _get from 'lodash/get';
+  import _compact from 'lodash/compact';
+  import _isEmpty from 'lodash/isEmpty';
+
   import { mapState } from 'vuex';
   import CoreTable from 'kolibri.coreVue.components.CoreTable';
+  import { LEARNER_ROLES, LEARNER_MATCHUP_TABLE_COLUMNS } from '../constants';
+  import LearnerMatchupTable from './LearnerMatchupTable.vue';
 
   export default {
     name: 'LearnerMatchupPage',
-    components: { CoreTable },
+    components: { CoreTable, LearnerMatchupTable },
     computed: {
       ...mapState('classes', ['matchups']),
-
-      subheaderText() {
-        console.log(this.getSubject());
-        return this.$tr('learnersMatchupSubheader', {
-          subject: this.getSubject(),
-        });
-      },
-      subjectText() {
-        console.log(this.getSubject());
-        return this.$tr('subjectDetails', {
-          subject: this.getSubject(),
-        });
-      },
-      roleText() {
-        console.log(this.getSubject());
-        return this.$tr('roleDetails', {
-          role: this.role(),
-        });
-      },
-      supervisorLabel() {
-        return this.$tr('supervisorLabel');
-      },
-      menteeLabel() {
-        return this.$tr('menteeLabel');
-      },
-      mentorLabel() {
-        return this.$tr('mentorLabel');
-      },
-      isMentor() {
-        console.log(this.role());
-        if (this.role() === 'Mentor') {
-          return true;
-        }
-        return false;
-      },
-      supervisor() {
-        return this.matchups[0]['supervisor']['name'];
-      },
-      mentor() {
-        return this.matchups[0]['mentor']['name'];
-      },
       menteeList() {
-        let menteeNames = [];
-        for (var i in this.matchups[0]['mentee_list']) {
-          let mentee = this.matchups[0]['mentee_list'][i];
-          menteeNames.push(mentee['name']);
-        }
-        return menteeNames;
+        return _compact(
+          _map(this.matchups, matchup => {
+            if (_get(matchup, 'role') === LEARNER_ROLES.MENTOR) {
+              return {
+                [LEARNER_MATCHUP_TABLE_COLUMNS.SUBJECT]: _get(matchup, 'subject', '-'),
+                menteeId: _get(matchup, ['mentee_list', 'id'], '-'),
+                [LEARNER_MATCHUP_TABLE_COLUMNS.MENTEE]: _get(matchup, ['mentee_list', 'name'], '-'),
+                [LEARNER_MATCHUP_TABLE_COLUMNS.SUPERVISOR]: _get(
+                  matchup,
+                  ['supervisor', 'name'],
+                  '-'
+                ),
+                role: _get(matchup, 'role'),
+              };
+            }
+          })
+        );
+      },
+      mentorList() {
+        return _compact(
+          _map(this.matchups, matchup => {
+            if (_get(matchup, 'role') === LEARNER_ROLES.MENTEE) {
+              return {
+                [LEARNER_MATCHUP_TABLE_COLUMNS.SUBJECT]: _get(matchup, 'subject', '-'),
+                mentorId: _get(matchup, ['mentor', 'id'], '-'),
+                [LEARNER_MATCHUP_TABLE_COLUMNS.MENTOR]: _get(matchup, ['mentor', 'name'], '-'),
+                [LEARNER_MATCHUP_TABLE_COLUMNS.SUPERVISOR]: _get(
+                  matchup,
+                  ['supervisor', 'name'],
+                  '-'
+                ),
+                role: _get(matchup, 'role'),
+              };
+            }
+          })
+        );
+      },
+      hasMentees() {
+        return !_isEmpty(this.menteeList);
+      },
+      hasMentors() {
+        return !_isEmpty(this.mentorList);
       },
     },
     methods: {
-      getSubject() {
-        return this.matchups[0]['subject'];
+      getMentorTableColumnHeaders() {
+        return {
+          [LEARNER_MATCHUP_TABLE_COLUMNS.SUBJECT]: this.$tr('subjectLabel'),
+          [LEARNER_MATCHUP_TABLE_COLUMNS.MENTOR]: this.$tr('mentorLabel'),
+          [LEARNER_MATCHUP_TABLE_COLUMNS.SUPERVISOR]: this.$tr('supervisorLabel'),
+        };
       },
-      role() {
-        return this.matchups[0]['role'];
+      getMenteeTableColumnHeaders() {
+        return {
+          [LEARNER_MATCHUP_TABLE_COLUMNS.SUBJECT]: this.$tr('subjectLabel'),
+          [LEARNER_MATCHUP_TABLE_COLUMNS.MENTEE]: this.$tr('menteeLabel'),
+          [LEARNER_MATCHUP_TABLE_COLUMNS.SUPERVISOR]: this.$tr('supervisorLabel'),
+        };
       },
     },
     $trs: {
-      subjectDetails: 'Subject : {subject}',
-      roleDetails: 'Role : {role}',
       learnersMatchupHeader: 'Learner matchup',
-      learnersMatchupSubheader: 'Please find details of your matchup pairs below.',
+      learnersMatchupSubheader: 'Here you can find details of your matchup pairs.',
+      subjectLabel: 'Subject',
       supervisorLabel: 'Supervisor',
-      menteeLabel: 'Mentees',
+      menteeLabel: 'Mentee',
       mentorLabel: 'Mentor',
+      noMentorLabel: 'No mentors have been assigned to you.',
+      noMenteeLabel: 'No mentees have been assigned to you.',
+      mentorTableHeader: 'Your subjectwise mentors',
+      menteeTableHeader: 'Your subjectwise mentees',
     },
   };
 
 </script>
 <style  lang="scss" scoped>
-
 </style>

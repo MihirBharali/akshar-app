@@ -35,6 +35,16 @@
         :color="$themeTokens.textInverted"
       />
     </NavbarLink>
+    <NavbarLink
+      :title="$tr('match_up')"
+      :link="matchupLink"
+    >
+      <KIcon
+        icon="device"
+        style="top: 0; width: 24px; height: 24px;"
+        :color="$themeTokens.textInverted"
+      />
+    </NavbarLink>
   </Navbar>
 
 </template>
@@ -67,6 +77,9 @@
         recommendedLink: {
           name: PageNames.RECOMMENDED,
         },
+        matchupLink: {
+          name: ClassesPageNames.MATCHUP_DETAILS,
+        },
       };
     },
     computed: {
@@ -76,6 +89,12 @@
       }),
       showClassesLink() {
         return this.isUserLoggedIn && (this.userHasMemberships || !this.canAccessUnassignedContent);
+      },
+    },
+    $trs: {
+      match_up: {
+        message: 'Match Up',
+        context: "Title of tab in 'Learner' section.",
       },
     },
   };

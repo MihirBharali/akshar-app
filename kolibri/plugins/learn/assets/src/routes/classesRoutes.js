@@ -90,10 +90,9 @@ export default [
   },
   {
     name: ClassesPageNames.MATCHUP_DETAILS,
-    path: '/matchup/:subject',
-    handler: toRoute => {
-      const { subject } = toRoute.params;
-      return noClassesGuard() || showMatchupDetailsPage(store, subject);
+    path: '/matchup',
+    handler: () => {
+      return noClassesGuard() || showMatchupDetailsPage(store);
     },
   },
 ];
