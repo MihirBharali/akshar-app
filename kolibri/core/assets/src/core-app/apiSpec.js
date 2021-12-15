@@ -109,6 +109,7 @@ import CatchErrors from '../utils/CatchErrors';
 import UiToolbar from '../views/KeenUiToolbar.vue';
 import shuffled from '../utils/shuffled';
 import appCapabilities from '../utils/appCapabilities';
+import filterTransactionsByStatusType from '../utils/filterTransactionsByStatusType';
 import * as client from './client';
 import urls from './urls';
 
@@ -222,5 +223,6 @@ export default {
     UserType,
     validators,
     updatePromotionQueueObjects,
+    filterTransactionsByStatusType,
   },
 };

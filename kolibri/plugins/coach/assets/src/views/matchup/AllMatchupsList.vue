@@ -1,6 +1,6 @@
 <template>
 
-  <KPageContainer class="container">
+  <KPageContainer>
     <h2>
       <KLabeledIcon icon="device" :label="$tr('learnersMatchupHeader')" /> 
     </h2>
@@ -176,10 +176,6 @@
   }
   .type-filter {
     margin-bottom: 0;
-  }
-
-  .container {
-    width: 50%;
   }
 
 </style>

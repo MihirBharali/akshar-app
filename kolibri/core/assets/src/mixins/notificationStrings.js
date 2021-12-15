@@ -119,6 +119,15 @@ export default createTranslator('NotificationStrings', {
       '{count, number} {count, plural, one {student denied promotion} other {students denied promotion}}',
     context: 'Denying a specified number of learner for promotion',
   },
+  wageTxnCreatedSuccessMessage: {
+    message: 'Request raised successfully.',
+    context: 'Successfully raising a wage credit/debit requests',
+  },
+  wageTxnUpdatedSuccessMessage: {
+    message: 'Transaction updated successfully.',
+    context: 'Successfully updating a wage credit/debit requests',
+
+  },
   // TODO move more messages into this namespace:
   // - "Quiz started"
   // - "Quiz Ended"

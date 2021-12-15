@@ -15,6 +15,8 @@ export function pageMode(state) {
     return PageModes.RECOMMENDED;
   } else if (PageNames.SEARCH === state.pageName) {
     return PageModes.SEARCH;
+  } else if (PageNames.WAGE_DETAILS === state.pageName) {
+    return PageModes.WAGE;
   } else if (examPages.some(pageNameMatches)) {
     return PageModes.EXAM;
   }

@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     "kolibri.core.analytics",
     "kolibri.core.promotion",
     "kolibri.core.match_up",
+    "kolibri.core.wage_tracker",
     "rest_framework",
     "django_js_reverse",
     "jsonfield",

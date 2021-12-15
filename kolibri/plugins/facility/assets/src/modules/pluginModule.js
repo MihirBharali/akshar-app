@@ -8,6 +8,7 @@ import userManagement from './userManagement';
 import manageCSV from './manageCSV';
 import importCSV from './importCSV';
 import matchup from './matchUp';
+import wage from './wage';
 
 export default {
   state() {
@@ -100,6 +101,18 @@ export default {
           name: PageNames.MATCH_UP_PAGE,
           params,
         },
+        WageDetails: {
+          name: PageNames.WAGE_DETAILS,
+          params,
+        },
+        WageManagePage: {
+          name: PageNames.WAGE_MANAGE,
+          params,
+        },
+        WageReportPage: {
+          name: PageNames.WAGE_REPORT,
+          params,
+        },
       };
     },
   },
@@ -112,5 +125,6 @@ export default {
     manageCSV,
     importCSV,
     matchup,
+    wage,
   },
 };

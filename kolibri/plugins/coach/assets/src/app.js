@@ -29,9 +29,13 @@ class CoachToolsModule extends KolibriApp {
       this.store.commit('SET_PAGE_NAME', to.name);
       if (
         to.name &&
-        !['CoachClassListPage', 'StatusTestPage', 'CoachPrompts', 'AllFacilitiesPage'].includes(
-          to.name
-        )
+        ![
+          'CoachClassListPage',
+          'StatusTestPage',
+          'CoachPrompts',
+          'AllFacilitiesPage',
+          'CoachLearnerWageList',
+        ].includes(to.name)
       ) {
         promises.push(this.store.dispatch('initClassInfo', to.params.classId));
       } else {

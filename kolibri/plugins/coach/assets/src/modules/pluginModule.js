@@ -14,6 +14,7 @@ import classSummary from './classSummary';
 import coachNotifications from './coachNotifications';
 import questionDetail from './questionDetail';
 import questionList from './questionList';
+import wage from './wage';
 
 const logging = logger.getLogger(__filename);
 
@@ -57,6 +58,9 @@ export default {
       if (getters.isSuperuser) {
         return true;
       } else if (getters.isCoach || getters.isAdmin) {
+        if (state.route.name == 'CoachLearnerWageList') {
+          return true;
+        }
         return state.classSummary.facility_id === rootState.core.session.facility_id;
       } else {
         return false;
@@ -149,5 +153,6 @@ export default {
     lessonsRoot,
     questionDetail,
     questionList,
+    wage,
   },
 };

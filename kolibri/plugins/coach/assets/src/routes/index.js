@@ -7,7 +7,10 @@ import HomePage from '../views/home/HomePage';
 import CoachPrompts from '../views/CoachPrompts';
 import HomeActivityPage from '../views/home/HomeActivityPage';
 import StatusTestPage from '../views/common/status/StatusTestPage';
+import CoachLearnerWageList from '../views/wage/';
 import { ClassesPageNames } from '../../../../learn/assets/src/constants';
+import { showCoachWagePage } from '../modules/wage/handlers';
+import { PageNames } from '../constants';
 import reportRoutes from './reportRoutes';
 import planRoutes from './planRoutes';
 
@@ -87,6 +90,14 @@ export default [
     component: CoachPrompts,
     handler() {
       store.dispatch('notLoading');
+    },
+  },
+  {
+    nsmr: PageNames.COACH_WAGE_REQUEST_LIST_PAGE,
+    path: '/wage-details',
+    component: CoachLearnerWageList,
+    handler() {
+      showCoachWagePage(store);
     },
   },
   {

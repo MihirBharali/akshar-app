@@ -47,3 +47,5 @@ export { default as PromotionQueueResource } from './promotionQueueResource';
 export { default as AdminMatchupResource } from './matchup';
 export { default as CoachMatchupResource } from './coachmatchup';
 export { default as LearnerMatchupResource } from './learnermatchup';
+export { default as WageAccountResource } from './wageaccount';
+export { default as WageTransactionResource } from './wagetransaction';

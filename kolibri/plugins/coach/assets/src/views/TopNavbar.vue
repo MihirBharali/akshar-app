@@ -73,6 +73,11 @@
         context:
           "Translate as a VERB. Refers to the 'Plan' tab where coaches manage lessons, quizzes, and groups.",
       },
+      wage: {
+        message: 'Wage',
+        context:
+          "Tab name of the 'Wage' section where the coach and see requests and raise ones specific to a specific class.",
+      },
     },
   };
 

@@ -56,6 +56,9 @@ export default {
     currentUserId(state) {
       return state.user_id;
     },
+    currentUserFullname(state) {
+      return state.full_name;
+    },
     getUserKind(state, getters) {
       if (getters.isSuperuser) {
         return UserKinds.SUPERUSER;

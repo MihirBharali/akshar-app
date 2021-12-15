@@ -14,6 +14,7 @@ export const PageNames = {
   EXAM_LIST: 'EXAM_LIST',
   EXAM: 'EXAM',
   EXAM_ROOT: 'EXAM_ROOT',
+  WAGE_DETAILS: 'WAGE_DETAILS',
 };
 
 // switch between modes
@@ -22,6 +23,7 @@ export const PageModes = {
   RECOMMENDED: 'RECOMMENDED',
   SEARCH: 'SEARCH',
   EXAM: 'EXAM',
+  WAGE: 'WAGE',
 };
 
 export const ClassesPageNames = {
@@ -51,6 +53,7 @@ export const pageNameToModuleMap = {
   [PageNames.TOPICS_CONTENT]: 'topicsTree',
   [PageNames.TOPICS_TOPIC]: 'topicsTree',
   [PageNames.RECOMMENDED_CONTENT]: 'topicsTree',
+  [PageNames.WAGE_DETAILS]: 'wage',
 };
 
 export const LEARNER_ROLES = {
@@ -63,4 +66,18 @@ export const LEARNER_MATCHUP_TABLE_COLUMNS = {
   MENTOR: 'mentor',
   MENTEE: 'mentee',
   SUPERVISOR: 'supervisor',
+};
+
+export const ACTIVE_WAGE_TXN_STATUSES = ['COACH_APPROVED', 'CREATED'];
+
+export const COMPLETED_WAGE_TXN_STATUSES = [
+  'COMPLETED',
+  'COACH_DENIED',
+  'DENIED',
+  'DENIED_INSUFFICIENT_FUND',
+];
+
+export const WAGE_TXN_TYPES = {
+  CREDIT: 'CREDIT',
+  DEBIT: 'DEBIT',
 };

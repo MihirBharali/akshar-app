@@ -13,9 +13,11 @@ import {
   showResumePage,
 } from '../modules/recommended/handlers';
 import { showChannels } from '../modules/topicsRoot/handlers';
+import { showWageAccountDetailsPage } from '../modules/wage/handlers';
 import { PageNames, ClassesPageNames } from '../constants';
 import RecommendedPage from '../views/RecommendedPage';
 import RecommendedSubpage from '../views/RecommendedSubpage';
+import LearnerWagePage from '../views/wage/';
 import classesRoutes from './classesRoutes';
 
 function unassignedContentGuard() {
@@ -153,6 +155,14 @@ export default [
       showNextStepsPage(store);
     },
     component: RecommendedSubpage,
+  },
+  {
+    name: PageNames.WAGE_DETAILS,
+    path: '/wage',
+    handler: () => {
+      showWageAccountDetailsPage(store);
+    },
+    component: LearnerWagePage,
   },
   {
     path: '*',

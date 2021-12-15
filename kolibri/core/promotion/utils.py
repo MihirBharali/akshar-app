@@ -21,6 +21,11 @@ STATUS_TO_BE_INCLUDED_FOR_ADMIN =  "RECOMMENDED"
 STATUS_TO_BE_INCLUDED_FOR_LEARNER =  "LESSONS_PENDING"
 COLLECTION_KIND_FACILITY = 'facility'
 
+
+def delete_promotion_requests(learner_id, facility_id):
+    PromotionQueue.objects.filter(learner_id = learner_id, facility_id = facility_id).delete()
+
+
 def get_promotion_list(role, **kwargs):
     if role == ROLE_COACH:
         classroom_id = kwargs.get("classroom_id")

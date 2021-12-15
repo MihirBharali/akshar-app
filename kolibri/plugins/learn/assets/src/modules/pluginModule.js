@@ -10,6 +10,7 @@ import recommended from './recommended';
 import search from './search';
 import topicsRoot from './topicsRoot';
 import topicsTree from './topicsTree';
+import wage from './wage';
 
 import plugin_data from 'plugin_data';
 
@@ -37,5 +38,6 @@ export default {
     search,
     topicsRoot,
     topicsTree,
+    wage,
   },
 };

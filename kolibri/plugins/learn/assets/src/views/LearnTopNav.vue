@@ -45,6 +45,16 @@
         :color="$themeTokens.textInverted"
       />
     </NavbarLink>
+    <NavbarLink
+      :title="$tr('wage')"
+      :link="wagePageLink"
+    >
+      <KIcon
+        icon="star"
+        style="top: 0; width: 24px; height: 24px;"
+        :color="$themeTokens.textInverted"
+      />
+    </NavbarLink>
   </Navbar>
 
 </template>
@@ -80,6 +90,9 @@
         matchupLink: {
           name: ClassesPageNames.MATCHUP_DETAILS,
         },
+        wagePageLink: {
+          name: PageNames.WAGE_DETAILS,
+        },
       };
     },
     computed: {
@@ -94,6 +107,10 @@
     $trs: {
       match_up: {
         message: 'Match Up',
+        context: "Title of tab in 'Learner' section.",
+      },
+      wage: {
+        message: 'Wage',
         context: "Title of tab in 'Learner' section.",
       },
     },

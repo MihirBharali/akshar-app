@@ -22,6 +22,26 @@
       />
     </NavbarLink>
     <NavbarLink
+      :title="$tr('match_up')"
+      :link="$store.getters.facilityPageLinks.MatchUpPage"
+    >
+      <KIcon
+        icon="device"
+        :color="$themeTokens.textInverted"
+        style="top: 0; width: 24px; height: 24px;"
+      />
+    </NavbarLink>
+    <NavbarLink
+      :title="$tr('wage')"
+      :link="$store.getters.facilityPageLinks.WageDetails"
+    >
+      <KIcon
+        icon="star"
+        :color="$themeTokens.textInverted"
+        style="top: 0; width: 24px; height: 24px;"
+      />
+    </NavbarLink>
+    <NavbarLink
       :title="$tr('settings')"
       :link="$store.getters.facilityPageLinks.FacilitiesConfigPage"
     >
@@ -41,16 +61,7 @@
         style="top: 0; width: 24px; height: 24px;"
       />
     </NavbarLink>
-    <NavbarLink
-      :title="$tr('match_up')"
-      :link="$store.getters.facilityPageLinks.MatchUpPage"
-    >
-      <KIcon
-        icon="device"
-        :color="$themeTokens.textInverted"
-        style="top: 0; width: 24px; height: 24px;"
-      />
-    </NavbarLink>
+
   </Navbar>
 
 </template>
@@ -80,6 +91,10 @@
       },
       match_up: {
         message: 'Match Up',
+        context: "Title of tab in 'Facility' section.",
+      },
+      wage: {
+        message: 'Wage',
         context: "Title of tab in 'Facility' section.",
       },
     },

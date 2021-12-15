@@ -14,5 +14,6 @@ urlpatterns = [
     url(r"^notifications/", include("kolibri.core.analytics.api_urls")),
     url(r"^public/", include("kolibri.core.public.api_urls")),
     url(r"^promotion/", include("kolibri.core.promotion.api_urls")),
-     url(r"^match-up/", include("kolibri.core.match_up.api_urls")),
+    url(r"^match-up/", include("kolibri.core.match_up.api_urls")),
+    url(r"^wage/", include("kolibri.core.wage_tracker.api_urls")), 
 ]

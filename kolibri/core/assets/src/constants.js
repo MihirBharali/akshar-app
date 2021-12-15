@@ -173,3 +173,88 @@ export const FacilityUserGender = {
   FEMALE: 'FEMALE',
   ...DemographicConstants,
 };
+
+export const WageStatusesDropdownOptions = {
+  ACTIVE: { value: 'Active', label: 'Active' },
+  COMPLETED: { value: 'Completed', label: 'Completed' },
+  ALL: { value: 'All', label: 'All' },
+};
+
+export const WageRequestOptions = {
+  CREDIT: {
+    TEACHING: {
+      label: 'Teaching',
+      value: 'Teaching',
+    },
+    GARDENING: {
+      label: 'Gardeninig',
+      value: 'Gardeninig',
+    },
+    CARPENTRY: {
+      label: 'Carpentry',
+      value: 'Carpentry',
+    },
+    LANDSCAPE: {
+      label: 'Landscape',
+      value: 'Landscape',
+    },
+    OFFICE_ASSISTANT: {
+      label: 'Office Assistant',
+      value: 'Office Assistant',
+    },
+    ELECTRICIAN: {
+      value: 'Electrician',
+      label: 'Electrician',
+    },
+    FIRST_AID: {
+      value: 'First Aid',
+      label: 'First Aid',
+    },
+    MISC: {
+      value: 'Miscellaneous',
+      label: 'Miscellaneous',
+    },
+  },
+  DEBIT: {
+    CASH_WITHDRAWAL: {
+      value: 'Cash Withdrawal',
+      label: 'Cash Withdrawal',
+    },
+    PURCHASE_ITEM: {
+      value: 'Purchase Item',
+      label: 'Purchase Item',
+    },
+    PENALTY: {
+      label: 'Penalty',
+      value: 'Penalty',
+    },
+    MISC: {
+      value: 'Miscellaneous',
+      label: 'Miscellaneous',
+    },
+  },
+};
+
+export const WageRequestType = {
+  CREDIT: {
+    value: 'CREDIT',
+    label: 'Deposit',
+  },
+  DEBIT: {
+    value: 'DEBIT',
+    label: 'Withdrawal',
+  },
+};
+
+export const WageRequestStatuses = {
+  CREATED: 'CREATED',
+  COACH_APPROVED: 'COACH_APPROVED',
+  COACH_DENIED: 'COACH_DENIED',
+  COMPLETED: 'COMPLETED',
+  DENIED: 'DENIED',
+  DENIED_INSUFFICIENT_FUND: 'DENIED_INSUFFICIENT_FUND',
+};
+
+export const DefaultWageRequestType = WageRequestType.CREDIT;
+
+export const DefaultSelectedWageTxnStatus = WageStatusesDropdownOptions.ACTIVE;

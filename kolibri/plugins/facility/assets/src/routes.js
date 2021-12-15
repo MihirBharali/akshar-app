@@ -11,6 +11,9 @@ import UserCreatePage from './views/UserCreatePage';
 import UserEditPage from './views/UserEditPage';
 import AllFacilitiesPage from './views/AllFacilitiesPage';
 import MatchUpPage from './views/MatchUpPage';
+import FacilityWagePage from './views/Wage';
+import FacilityWageManagePage from './views/Wage/FacilityWageManagePage';
+import FacilityWageReportingPage from './views/Wage/FacilityWageReportingPage';
 import { showClassesPage } from './modules/classManagement/handlers';
 import { showClassEditPage } from './modules/classEditManagement/handlers';
 import { showUserPage } from './modules/userManagement/handlers';
@@ -20,6 +23,7 @@ import {
   showCoachClassAssignmentPage,
 } from './modules/classAssignMembers/handlers';
 import { showMatchUpPage } from './modules/matchUp/handlers';
+import { showWageDetailsPage, showWageReportingPage } from './modules/wage/handlers';
 import { PageNames } from './constants';
 
 export default [
@@ -121,6 +125,31 @@ export default [
     path: '/:facility_id?/match-up',
     handler: toRoute => {
       showMatchUpPage(store, toRoute);
+    },
+  },
+  {
+    name: PageNames.WAGE_DETAILS,
+    component: FacilityWagePage,
+    path: '/:facility_id?/wage',
+    handler: toRoute => {
+      store.dispatch('preparePage', { isAsync: false });
+      //  showWageDetailsPage(store, toRoute);
+    },
+  },
+  {
+    name: PageNames.WAGE_MANAGE,
+    component: FacilityWageManagePage,
+    path: '/:facility_id?/wage/manage',
+    handler: toRoute => {
+      showWageDetailsPage(store, toRoute);
+    },
+  },
+  {
+    name: PageNames.WAGE_REPORT,
+    component: FacilityWageReportingPage,
+    path: '/:facility_id?/wage/report',
+    handler: toRoute => {
+      showWageReportingPage(store, toRoute);
     },
   },
   {

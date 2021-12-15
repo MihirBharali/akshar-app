@@ -67,6 +67,7 @@ from kolibri.core.device.utils import allow_guest_access
 from kolibri.core.device.utils import allow_other_browsers_to_connect
 from kolibri.core.device.utils import valid_app_key_on_request
 from kolibri.core.match_up.helpers.user_deletion_helper import update_matchup 
+from kolibri.core.promotion.utils import delete_promotion_requests
 from kolibri.core.promotion.utils import get_promotion_list
 from kolibri.core.logger.models import UserSessionLog
 from kolibri.core.mixins import BulkCreateMixin
@@ -267,6 +268,7 @@ class FacilityUserViewSet(ValuesViewset):
         instance = self.get_object()
         self.perform_destroy(instance)
         # Not a good design but required to trigger automatic reassignment :(
+        delete_promotion_requests(learner_id = instance.id, facility_id = instance.facility_id)
         update_matchup(user_id = instance.id, facility_id = instance.facility_id)
         return Response(status=status.HTTP_204_NO_CONTENT)    
 

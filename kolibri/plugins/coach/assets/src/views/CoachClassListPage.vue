@@ -63,10 +63,21 @@
         </template>
       </CoreTable>
     </KPageContainer>
+
+
+    <KGrid gutter="16">
+      <KGridItem :layout12="{ span: 6 }">
+        <WageBlock />
+      </KGridItem>
+      <KGridItem :layout12="{ span: 6 }">
+        <div v-if="hasMatchupData">
+          <AllMatchupsList />
+        </div>
+      </KGridItem>
+    </KGrid>
+
     <PromotionNotification role="Coach" :promotions="promotionsList" /> 
-    <div v-if="hasMatchupData">
-      <AllMatchupsList />
-    </div>
+
 
 
   </CoreBase>
@@ -83,14 +94,15 @@
   import PromotionNotification from 'kolibri.coreVue.components.PromotionNotification';
   import commonCoach from './common';
   import AllMatchupsList from './matchup/AllMatchupsList.vue';
+  import WageBlock from './WageBlock.vue';
 
   export default {
     name: 'CoachClassListPage',
-    components: { PromotionNotification, AllMatchupsList },
+    components: { PromotionNotification, AllMatchupsList, WageBlock },
     mixins: [commonCoach, commonCoreStrings],
     computed: {
       ...mapGetters(['isAdmin', 'isClassCoach', 'isFacilityCoach', 'userIsMultiFacilityAdmin']),
-      ...mapState(['classList', 'matchups']),
+      ...mapState(['classList', 'matchups', 'wageDetails']),
       // Message that shows up when state.classList is empty
       emptyStateDetails() {
         if (this.isClassCoach) {

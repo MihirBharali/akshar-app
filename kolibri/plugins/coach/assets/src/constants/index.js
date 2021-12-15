@@ -33,6 +33,7 @@ export const PageNames = {
     'REPORTS_GROUP_REPORT_LESSON_EXERCISE_QUESTION_PAGE_ROOT',
   REPORTS_GROUP_REPORT_QUIZ_QUESTION_PAGE_ROOT: 'REPORTS_GROUP_REPORT_QUIZ_QUESTION_PAGE_ROOT',
   REPORTS_QUIZ_QUESTION_PAGE_ROOT: 'REPORTS_QUIZ_QUESTION_PAGE_ROOT',
+  COACH_WAGE_REQUEST_LIST_PAGE: 'COACH_WAGE_REQUEST_LIST_PAGE',
 };
 
 export const GroupModals = {
@@ -47,6 +48,7 @@ export const pageNameToModuleMap = {
   [PageNames.EXAM_REPORT_DETAIL]: 'examReportDetail',
   [LessonsPageNames.PLAN_LESSONS_ROOT]: 'lessonsRoot',
   [LessonsPageNames.RESOURCE_USER_REPORT]: 'exerciseDetail',
+  [PageNames.COACH_WAGE_REQUEST_LIST_PAGE]: 'wage',
   // Omitting modules for resource selection, exam creation, and preview to prevent
   // default module state resetting behavior.
 };
