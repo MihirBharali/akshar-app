@@ -77,6 +77,12 @@
           :disabled="formDisabled"
         />
 
+        <template v-if="learnerIsSelected">
+          <PhysicalFacilityLevelTextBox
+            :value.sync="physicalFacilityLevel"
+            :disabled="formDisabled"
+          />
+        </template>
         <BirthYearSelect
           :value.sync="birthYear"
           :disabled="formDisabled"
@@ -134,6 +140,7 @@
   import UsernameTextbox from 'kolibri.coreVue.components.UsernameTextbox';
   import commonCoreStrings from 'kolibri.coreVue.mixins.commonCoreStrings';
   import IdentifierTextbox from './IdentifierTextbox';
+  import PhysicalFacilityLevelTextBox from './PhysicalFacilityLevelTextBox';
 
   export default {
     name: 'UserEditPage',
@@ -149,6 +156,7 @@
       UsernameTextbox,
       FullNameTextbox,
       IdentifierTextbox,
+      PhysicalFacilityLevelTextBox,
     },
     mixins: [commonCoreStrings],
     data() {
@@ -168,6 +176,7 @@
         userCopy: {},
         caughtErrors: [],
         status: '',
+        physicalFacilityLevel: '',
       };
     },
     computed: {
@@ -200,6 +209,9 @@
             value: UserKinds.ADMIN,
           },
         ];
+      },
+      learnerIsSelected() {
+        return this.typeSelected.value == UserKinds.LEARNER;
       },
       formIsValid() {
         return every([this.fullNameValid, this.usernameValid]);
@@ -239,6 +251,7 @@
           this.idNumber = user.id_number;
           this.gender = user.gender;
           this.birthYear = user.birth_year;
+          this.physicalFacilityLevel = user.physical_facility_level;
           this.setKind(user);
           this.makeCopyOfUser(user);
           this.loading = false;
@@ -293,6 +306,7 @@
             gender: this.gender,
             id_number: this.idNumber,
             username: this.username,
+            physical_facility_level: this.physicalFacilityLevel,
           },
           (value, key) => {
             return value !== this.userCopy[key];

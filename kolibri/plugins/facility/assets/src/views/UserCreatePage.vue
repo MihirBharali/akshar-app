@@ -64,6 +64,12 @@
           :value.sync="idNumber"
           :disabled="busy"
         />
+        <template v-if="learnerIsSelected">
+          <PhysicalFacilityLevelTextBox
+            :value.sync="physicalFacilityLevel"
+            :disabled="formDisabled"
+          />
+        </template>
 
         <BirthYearSelect
           :value.sync="birthYear"
@@ -116,6 +122,7 @@
   import PasswordTextbox from 'kolibri.coreVue.components.PasswordTextbox';
   import commonCoreStrings from 'kolibri.coreVue.mixins.commonCoreStrings';
   import IdentifierTextbox from './IdentifierTextbox';
+  import PhysicalFacilityLevelTextBox from './PhysicalFacilityLevelTextBox';
 
   const { NOT_SPECIFIED } = DemographicConstants;
 
@@ -133,6 +140,7 @@
       FullNameTextbox,
       PasswordTextbox,
       IdentifierTextbox,
+      PhysicalFacilityLevelTextBox,
     },
     mixins: [commonCoreStrings],
     data() {
@@ -175,6 +183,9 @@
       },
       coachIsSelected() {
         return this.kind.value === UserKinds.COACH;
+      },
+      learnerIsSelected() {
+        return this.kind.value == UserKinds.LEARNER;
       },
       formIsValid() {
         return every([this.fullNameValid, this.usernameValid, this.passwordValid]);

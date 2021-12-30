@@ -36,6 +36,7 @@ class FacilityUserSerializer(serializers.ModelSerializer):
             "full_name",
             "password",
             "facility",
+            "physical_facility_level",
             "roles",
             "is_superuser",
             "id_number",

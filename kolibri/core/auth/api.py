@@ -216,6 +216,7 @@ class FacilityUserViewSet(ValuesViewset):
         "roles__kind",
         "roles__collection",
         "roles__id",
+        "physical_facility_level",
         "devicepermissions__is_superuser",
         "id_number",
         "gender",

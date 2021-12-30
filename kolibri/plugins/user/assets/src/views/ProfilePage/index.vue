@@ -22,15 +22,6 @@
       </KGrid>
 
       <table>
-        <tr>
-          <th>{{ $tr('points') }}</th>
-          <td class="points-cell">
-            <PointsIcon class="points-icon" />
-            <span :style="{ color: $themeTokens.correct }">
-              {{ $formatNumber(totalPoints) }}
-            </span>
-          </td>
-        </tr>
 
         <tr>
           <th>{{ coreString('userTypeLabel') }}</th>
@@ -46,6 +37,11 @@
         <tr v-if="facilityName">
           <th>{{ coreString('facilityLabel') }}</th>
           <td>{{ facilityName }}</td>
+        </tr>
+
+        <tr v-if="showPhysicalFacilityLevel">
+          <th>{{ $tr('physicalFacilityLevel') }}</th>
+          <td>{{ physicalFacilityLevel }}</td>
         </tr>
 
         <tr v-if="userHasPermissions">
@@ -126,6 +122,7 @@
 <script>
 
   import CoreBase from 'kolibri.coreVue.components.CoreBase';
+  import { UserKinds, PermissionTypes } from 'kolibri.coreVue.vuex.constants';
   import { mapState, mapGetters } from 'vuex';
   import { ref } from 'kolibri.lib.vueCompositionApi';
   import find from 'lodash/find';
@@ -135,7 +132,7 @@
   import PointsIcon from 'kolibri.coreVue.components.PointsIcon';
   import PermissionsIcon from 'kolibri.coreVue.components.PermissionsIcon';
   import UserTypeDisplay from 'kolibri.coreVue.components.UserTypeDisplay';
-  import { PermissionTypes } from 'kolibri.coreVue.vuex.constants';
+
   import GenderDisplayText from 'kolibri.coreVue.components.GenderDisplayText';
   import BirthYearDisplayText from 'kolibri.coreVue.components.BirthYearDisplayText';
   import { ComponentMap } from '../../constants';
@@ -180,6 +177,16 @@
       ...mapState({
         session: state => state.core.session,
       }),
+      showPhysicalFacilityLevel() {
+        if (
+          this.getUserKind == UserKinds.LEARNER &&
+          this.currentUser.physical_facility_level != undefined &&
+          this.currentUser.physical_facility_level != ''
+        ) {
+          return true;
+        }
+        return false;
+      },
       profileEditRoute() {
         return this.$router.getRoute(ComponentMap.PROFILE_EDIT);
       },
@@ -191,6 +198,9 @@
           id: this.$store.getters.currentFacilityId,
         });
         return match ? match.name : '';
+      },
+      physicalFacilityLevel() {
+        return this.currentUser.physical_facility_level;
       },
       permissionType() {
         if (this.isSuperuser) {
@@ -270,6 +280,10 @@
       documentTitle: {
         message: 'User Profile',
         context: 'Title of the user profile page.',
+      },
+      physicalFacilityLevel: {
+        message: 'Class',
+        context: 'Grade/Class/Standard of the student in the physical facility (school).',
       },
     },
   };

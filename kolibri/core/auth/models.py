@@ -708,6 +708,9 @@ class FacilityUser(KolibriAbstractBaseUser, AbstractFacilityDataModel):
 
     id_number = models.CharField(max_length=64, default="", blank=True)
 
+    # An identifier to indicate class/grade/standard in case the user is a learner
+    physical_facility_level =  models.CharField(max_length=64, default="", blank=True)
+
     @classmethod
     def deserialize(cls, dict_model):
         # be defensive against blank passwords, set to `NOT_SPECIFIED` if blank

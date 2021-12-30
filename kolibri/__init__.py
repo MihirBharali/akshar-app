@@ -17,8 +17,8 @@ env.set_env()
 #: get_version() - use ``kolibri.__version__`` for the exact version string.
 VERSION = (0, 15, 0, "alpha", 0)
 
-__author__ = "Learning Equality"
-__email__ = "info@learningequality.org"
+__author__ = "Akshar Foundation"
+__email__ = "contact@aksharfoundation.org"
 __version__ = str(get_version(VERSION))
 
 

@@ -47,7 +47,7 @@ class UserWageAccount(models.Model):
     # Morango syncing settings
     morango_model_name = "userWageAccount"
     #the owner of the account
-    user = models.ForeignKey(FacilityUser, unique=True, blank=False, null=False)
+    user = models.ForeignKey(FacilityUser, blank=False, null=False)
     #the timestamp when owner had last interaction with the account
     last_interaction_timestamp = DateTimeTzField(null=True, blank=True, default=local_now)
     #amount that the user has currently
