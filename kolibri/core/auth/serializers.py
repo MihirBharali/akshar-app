@@ -94,6 +94,8 @@ class FacilityDatasetSerializer(serializers.ModelSerializer):
             "preset",
             "learner_promotion_required_quiz_score",
             "learner_promotion_required_lesson_score",
+            "allow_match_up_same_gender",
+            "sort_match_up_by_physical_facility_level",
         )
 
     def save(self, **kwargs):

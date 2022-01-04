@@ -161,6 +161,8 @@ class FacilityDatasetViewSet(ValuesViewset):
         "preset",
         "learner_promotion_required_quiz_score",
         "learner_promotion_required_lesson_score",
+        "allow_match_up_same_gender",
+        "sort_match_up_by_physical_facility_level",
     )
 
     field_map = {"allow_guest_access": lambda x: allow_guest_access()}

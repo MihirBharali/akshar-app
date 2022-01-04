@@ -14,6 +14,8 @@
         :key="user.id"
         :index="index"
         :label="user.name"
+        :gender="user.gender"
+        :physical_facility_level="user.physical_facility_level"
         :className="className"
       />
     </div>

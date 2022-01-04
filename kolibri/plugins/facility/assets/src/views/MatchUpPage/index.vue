@@ -44,6 +44,7 @@
             @unassigned-mentor-added="handleUnassignedMentorAddition"
             @unassigned-mentee-added="handleUnassignedMenteeAddition"
             @remove-mentee="handleRemoveMentee"
+            @remove-mentor="handleRemoveMentor"
           />
         </div>
       </div>
@@ -51,10 +52,15 @@
         <template>
           <KButtonGroup>
             <KButton :text="$tr('save')" :primary="true" @click="handleSaveMatchupData" />
-            <KButton :text="$tr('reset')" @click="handleResetMatchupData" />
+            <KButton :text="$tr('refresh')" @click="showMatchupResetConfirmation = true" />
           </KButtonGroup>
         </template>
       </BottomAppBar>
+      <MatchupResetModal
+        v-if="showMatchupResetConfirmation" 
+        @submit="refreshMatchupData" 
+        @cancel="showMatchupResetConfirmation = false"
+      />
     </KPageContainer>
   </div>
 
@@ -82,6 +88,7 @@
   import FilterTextbox from 'kolibri.coreVue.components.FilterTextbox';
   import commonCoreStrings from 'kolibri.coreVue.mixins.commonCoreStrings';
   import SupervisorCard from './components/SupervisorCard';
+  import MatchupResetModal from './components/MatchupResetModal';
   import UnassignedUserContainer from './components/UnassignedUserContainer';
   import {
     UNASSIGNED_MENTORS_CLASSNAME,
@@ -92,7 +99,13 @@
 
   export default {
     name: 'MatchUpPage',
-    components: { SupervisorCard, BottomAppBar, UnassignedUserContainer, FilterTextbox },
+    components: {
+      SupervisorCard,
+      BottomAppBar,
+      UnassignedUserContainer,
+      FilterTextbox,
+      MatchupResetModal,
+    },
     mixins: [commonCoreStrings],
     data() {
       return {
@@ -106,6 +119,7 @@
         subjectOptions: [],
         unassignedMentorsClassname: UNASSIGNED_MENTORS_CLASSNAME,
         unassignedMenteesClassname: UNASSIGNED_MENTEES_CLASSNAME,
+        showMatchupResetConfirmation: false,
       };
     },
     computed: {
@@ -243,6 +257,8 @@
         const {
           userId,
           userName,
+          userGender,
+          userPhysicalFacilityLevel,
           userIndex,
           destinationSupervisorId,
           destinationSupervisorIndex,
@@ -251,11 +267,17 @@
         if (
           userId &&
           userName &&
+          userGender &&
           destinationSupervisorId &&
           !_isNil(userIndex) &&
           !_isNil(destinationSupervisorIndex)
         ) {
-          const mentorObject = { name: userName, id: userId };
+          const mentorObject = {
+            name: userName,
+            id: userId,
+            gender: userGender,
+            physical_facility_level: userPhysicalFacilityLevel,
+          };
           this.mergedMatchUpDetails[destinationSupervisorIndex].match_up.push({
             mentee_list: [],
             mentor: mentorObject,
@@ -267,13 +289,15 @@
         const {
           userId,
           userName,
+          userGender,
+          userPhysicalFacilityLevel,
           userIndex,
           destinationMentorId,
           destinationMentorIndex,
           destinationSupervisorId,
           destinationSupervisorIndex,
         } = data;
-
+        console.log(data);
         if (
           userId &&
           userName &&
@@ -283,7 +307,12 @@
           !_isNil(destinationMentorIndex) &&
           !_isNil(destinationSupervisorIndex)
         ) {
-          const menteeObject = { name: userName, id: userId };
+          const menteeObject = {
+            name: userName,
+            id: userId,
+            gender: userGender,
+            physical_facility_level: userPhysicalFacilityLevel,
+          };
           this.mergedMatchUpDetails[destinationSupervisorIndex].match_up[
             destinationMentorIndex
           ].mentee_list.push(menteeObject);
@@ -368,9 +397,39 @@
           this.unassignedMentees.push({ ...menteeObject, keepUnassigned: true });
         }
       },
+      handleRemoveMentor(data) {
+        const { mentorId, originMentorIndex, originSupervisorId, originSupervisorIndex } = data;
+        const currentMatchupData = this.mergedMatchUpDetails;
+
+        if (mentorId && originSupervisorId && !_isNil(originSupervisorIndex)) {
+          const mentorObject = _get(currentMatchupData, [
+            originSupervisorIndex,
+            'match_up',
+            originMentorIndex,
+            'mentor',
+          ]);
+          currentMatchupData[originSupervisorIndex].match_up.splice(originMentorIndex, 1);
+          this.unassignedMentors.push({ ...mentorObject, keepUnassigned: true });
+        }
+      },
       handleResetMatchupData() {
         this.init(this.selectedSubject.value);
         this.$store.dispatch('createSnackbar', this.$tr('resetMessage'));
+      },
+      refreshMatchupData() {
+        this.showMatchupResetConfirmation = false;
+        this.getMatchupData({
+          subject: this.selectedSubject.value,
+          facility: this.activeFacilityId,
+          fullReset: true,
+        })
+          .then(() => {
+            this.$store.dispatch('createSnackbar', this.$tr('resetMessage'));
+            this.init(this.selectedSubject.value);
+          })
+          .catch(error => {
+            this.$store.dispatch('handleApiError', error);
+          });
       },
     },
     watch: {
@@ -385,7 +444,7 @@
     },
     $trs: {
       pageHeader: {
-        message: 'Learner Match-up',
+        message: 'Learner match-up',
         context: 'Description on Facility > Match-up page.',
       },
       noMatchUpDataLabel: {
@@ -399,12 +458,15 @@
       save: {
         message: 'Save Match-up',
       },
+      refresh: {
+        message: 'Reset matchup',
+      },
       reset: { message: 'Reset' },
       unassignedUsersLabel: { message: 'Unassigned Users' },
       unassignedMentorsLabel: { message: 'Mentors' },
       unassignedMenteesLabel: { message: 'Mentees' },
       searchForUser: { message: 'Search users' },
-      resetMessage: { message: 'Changes reset' },
+      resetMessage: { message: 'Matchup reset' },
     },
   };
 

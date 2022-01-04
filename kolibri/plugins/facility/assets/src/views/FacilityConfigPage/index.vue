@@ -36,7 +36,7 @@
               v-if="
                 setting !== 'learner_can_edit_password' &&
                   setting !== 'learner_can_login_with_no_password' &&
-                  !isPromotionSettings(setting)
+                  !isNonCoreSetting(setting)
               "
             >
               <KCheckbox
@@ -90,6 +90,27 @@
                 type="number"
               />
             </p>
+          </div>
+          <div class="fieldset">
+            <label class="fieldset-label"> {{ $tr('studentMatchupSettings') }}</label>
+
+            <KCheckbox
+              key="allow_match_up_same_gender"
+              :disabled="enableChangePassword"
+              :label="$tr('matchupOnlySameGender')"
+              :checked="settings['allow_match_up_same_gender']"
+              @change="toggleSetting('allow_match_up_same_gender')"
+            />
+
+            <KCheckbox
+              key="sort_match_up_by_physical_facility_level"
+              :disabled="enableChangePassword"
+              :label="$tr('matchupSortByPhysicalFacility')"
+              :checked="settings['sort_match_up_by_physical_facility_level']"
+              @change="toggleSetting('sort_match_up_by_physical_facility_level')"
+            />
+
+
           </div>
         </div>
 
@@ -157,11 +178,15 @@
     'show_download_button_in_learn',
     'learner_promotion_required_quiz_score',
     'learner_promotion_required_lesson_score',
+    'allow_match_up_same_gender',
+    'sort_match_up_by_physical_facility_level',
   ];
 
-  const promotionSettingsList = [
+  const nonCoreSettingList = [
     'learner_promotion_required_quiz_score',
     'learner_promotion_required_lesson_score',
+    'allow_match_up_same_gender',
+    'sort_match_up_by_physical_facility_level',
   ];
 
   export default {
@@ -249,8 +274,8 @@
           this.updateSettingValue('learner_can_edit_password', false);
         }
       },
-      isPromotionSettings(settingName) {
-        return promotionSettingsList.includes(settingName);
+      isNonCoreSetting(settingName) {
+        return nonCoreSettingList.includes(settingName);
       },
       updateSettings(action) {
         this.$store
@@ -343,6 +368,19 @@
       documentTitle: {
         message: 'Configure Facility',
         context: 'Title of page.',
+      },
+      studentMatchupSettings: {
+        message: 'Student match-up settings',
+        context: 'Title of the student match-up settings section',
+      },
+      matchupOnlySameGender: {
+        message: 'Match only students of same gender',
+        context: 'If set true, students of same gender only will be matched with each other',
+      },
+      matchupSortByPhysicalFacility: {
+        message: "Use school's class or grade or standard for sorting",
+        context:
+          "If set true, studennts will be sorted based on their physical facility' level as well",
       },
     },
   };

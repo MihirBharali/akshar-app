@@ -1,14 +1,14 @@
 import math
-import re
+
 from django.db import transaction
-from django.db.models import Q
-from kolibri.core.auth.models import FacilityUser, Classroom
+from django.db.models import query
+from kolibri.core.auth.models import FacilityDataset, FacilityUser, Classroom
 from kolibri.utils.main import update
-
-
 from ..models import MatchUpDetails
+from .learners_sorting import get_learners
 
 MAX_PAIRS_PER_COACH = 10
+COLLECTION_KIND_FACILITY = 'facility'
 
 '''
 Processes a ``PUT`` request to update the matchups for a given 
@@ -42,6 +42,7 @@ def update_matchups(request):
       print("Processing a match_up")
       mentor = matchup['mentor']
       mentor_id = mentor['id']
+      print(mentor)
       if mentor_id in existing_mentors_id:
         existing_mentors_id.remove(mentor_id)
       
@@ -58,7 +59,7 @@ def update_matchups(request):
           mentor_id = mentor['id'],
           supervisor_id = supervisor['id']).distinct().values_list("mentee_id", flat=True)
 
-      # this list ``existing_mentees_id`` is used to track existing mentees which are not in the Requet payload
+      # this list ``existing_mentees_id`` is used to track existing mentees which are not in the Request payload
       existing_mentees_id = list(existing_mentees_queryset)    
       
       # If no mentees are provided in the request for the supervisor and mentor pair,
@@ -76,11 +77,13 @@ def update_matchups(request):
             facility_id = facility_id,
             subject = subject,
             mentor_id = mentor['id'],
+            mentor_gender = mentor['gender'],
+            mentor_physical_facility_level =  mentor.get('physical_facility_level', None),
             supervisor_id = supervisor['id'],
             mentor_name = mentor['name'],
             supervisor_name = supervisor['name'],
             mentee_id = None,
-            mentee_name = None
+            mentee_name = None,
             )
       else:
         # Remove any matchup entry thats present in the db with mentee_id == None
@@ -99,15 +102,21 @@ def update_matchups(request):
               subject = subject,
               mentee_id = mentee['id'],
               keepUnassigned = True).delete()
+            mentee_physical_facility_level = mentee.get('physical_facility_level', None)
+            print(mentee['physical_facility_level'])
             MatchUpDetails.objects.create(
               facility_id = facility_id,
               subject = subject,
               mentor_id = mentor['id'],
               supervisor_id = supervisor['id'],
               mentor_name =  mentor['name'],
+              mentor_gender = mentor['gender'],
+              mentor_physical_facility_level = mentor.get('physical_facility_level', None),
               supervisor_name = supervisor['name'],
               mentee_id = None if mentee is None else mentee['id'],
-              mentee_name = None if mentee is None else mentee['name']
+              mentee_name = None if mentee is None else mentee['name'],
+              mentee_gender = None if mentee is None else mentee['gender'],
+              mentee_physical_facility_level = mentee_physical_facility_level,
               ) 
       # After processing of the mentee_list, the ``existing_mentees_id`` list will 
       # be left with mentees which are removed from the supervisor-mentor pair
@@ -149,7 +158,9 @@ Even though it generates response for a ``GET`` request,
 it does more than simply. If new users are added to the facility, 
 they are added to the matchup pool before returning the response 
 '''
-def get_matchup_for_admin(facility_id, subject):
+def get_matchup_for_admin(facility_id, subject, full_reset):
+    if full_reset == 'true':
+      MatchUpDetails.objects.filter(subject = subject, facility_id = facility_id).delete()
   
     # list of all prospective mentees and mentors who may or may not be in any matchup  
     # These are just exhaustive lists created by dividing all learners for the
@@ -169,8 +180,12 @@ def get_matchup_for_admin(facility_id, subject):
                 "id",
                 "mentee_id",
                 "mentee_name",
+                "mentee_gender",
+                "mentee_physical_facility_level",
                 "mentor_id",
                 "mentor_name",
+                "mentor_gender",
+                "mentor_physical_facility_level",
                 "subject",
                 "supervisor_id",
                 "supervisor_name",
@@ -218,12 +233,16 @@ def get_matchup_for_admin(facility_id, subject):
         mentees_for_mentor = []
         mentor = {
           "id": pairs[0]["mentor_id"],
-          "name": pairs[0]["mentor_name"]
+          "name": pairs[0]["mentor_name"],
+          "gender": pairs[0]["mentor_gender"],
+          "physical_facility_level": pairs[0].get('mentor_physical_facility_level', None)
         }
         for mentee in pairs:
           mentees_for_mentor.append({
             "id": mentee["mentee_id"],
-            "name": mentee["mentee_name"]
+            "name": mentee["mentee_name"],
+            "gender": mentee["mentee_gender"],
+            "physical_facility_level": mentee.get('mentee_physical_facility_level', None)
           })
         matchups_for_supervisor.append({
           "mentor": mentor,
@@ -246,15 +265,28 @@ def get_matchup_for_admin(facility_id, subject):
     mentees_without_matchup = [] 
     mentors_without_matchup = []
     supervisors_without_matchup = []
+    
+    # list of mentors and mentees who are manually marked as unassigned by admin
+    query_unassigned_in_db = MatchUpDetails.objects.filter(subject = subject, facility_id=facility_id, keepUnassigned=True).distinct().values(
+      'mentee_id',
+      'mentor_id',
+    )
+
     for mentor in unassigned_mentors:
       mentors_without_matchup.append({
         "id": mentor['id'],
-        "name": mentor['full_name']
+        "name": mentor['full_name'],
+        "gender": mentor["gender"],
+        "physical_facility_level": mentor.get('physical_facility_level', None),
+        "keepUnassigned": check_if_unassigned_in_db(mentor['id'], 'mentor_id', query_unassigned_in_db)
       })   
     for mentee in unassigned_mentees:
       mentees_without_matchup.append({
         "id": mentee['id'],
-        "name": mentee['full_name']
+        "name": mentee['full_name'],
+        "gender": mentee["gender"],
+        "physical_facility_level":  mentee.get('physical_facility_level', None),
+        "keepUnassigned": check_if_unassigned_in_db(mentee['id'], 'mentee_id', query_unassigned_in_db)
       })  
     for supervisor in unassigned_supervisors:
       supervisors_without_matchup.append({
@@ -274,19 +306,14 @@ def get_matchup_for_admin(facility_id, subject):
     }
     return result
 
-# Gets all learners for a subject and divides them into mentees and mentors
-def get_learners(subject, facility_id):
-  learners = get_learners_by_subject(subject, facility_id)
-  if len(learners) == 0:
-    print("No learners found.")
-    return ([], [])
-  # Sort the learners by class  
-  learners.sort(key=lambda x:x.get('memberships__collection__name'), reverse=True)
 
-  # split learners into equal size groups of mentees and mentors
-  mentees, mentors = split_learners(learners) 
+# Checks if the mentee was manually marked as unassigned
+def check_if_unassigned_in_db(id, key, unassigned_list):
+  for item in unassigned_list:
+    if item[key] == id:
+      return True
+  return False    
   
-  return mentees, mentors
 
 # Gets all the supervisors in the facility
 def get_supervisors(facility_id):
@@ -342,7 +369,8 @@ def process(subject,
     unassigned_mentors,
     fixed_unassigned_pool):
   print("Processing matchups.")
-
+  
+  match_up_by_gender = should_match_with_same_gender(facility_id) 
   #process the existing incomplete matchups first
   for item in incomplete_matchups:
     if item['mentee_id'] is None:
@@ -353,12 +381,16 @@ def process(subject,
         continue
       item['mentee_id'] = available_mentee['id']
       item['mentee_name'] = available_mentee['full_name']
+      item['mentee_gender'] = available_mentee['gender']
+      item['mentee_physical_facility_level'] = available_mentee.get('physical_facility_level', None)
     if item['mentor_id'] is None:
-      available_mentor = get_next_available_mentor(fixed_unassigned_pool, unassigned_mentors, item['mentee_id'])
+      available_mentor = get_next_available_mentor(fixed_unassigned_pool, unassigned_mentors, item['mentee_id'], match_up_by_gender, item['mentee_gender'])
       if available_mentor is None:
         continue
       item['mentor_id'] = available_mentor['id']
       item['mentor_name'] = available_mentor['full_name']
+      item['mentor_gender'] = available_mentor['gender']
+      item['mentor_physical_facility_level'] = available_mentor.get('physical_facility_level', None)
     if item['supervisor_id'] is None:
       available_supervisor = get_supervisor(max_pairs_per_supervisor, pairs_count_by_supervisor, supervisors)
       if available_supervisor is None:
@@ -372,11 +404,11 @@ def process(subject,
   for mentee in unassigned_mentees:
     if is_user_in_fixed_unassigned_pool(fixed_unassigned_pool, 'mentees', mentee['id']):
       continue
-    available_mentor = get_next_available_mentor(fixed_unassigned_pool, unassigned_mentors, mentee['id'])
-    #Ensures that a matchup is created only when mentor  is available
+    available_mentor = get_next_available_mentor(fixed_unassigned_pool, unassigned_mentors, mentee['id'], match_up_by_gender, mentee['gender'])
+    #Ensures that a matchup is created only when mentor is available
     if available_mentor is None:
-      print("No more mentor available for one to one pairing.")
-      break
+      continue
+    
     #Ensures that a matchup is created only when supervisor is available
     available_supervisor = get_supervisor(max_pairs_per_supervisor, pairs_count_by_supervisor, supervisors)
     if available_supervisor is None:
@@ -388,8 +420,12 @@ def process(subject,
       facility_id = facility_id,
       mentee_id =  mentee['id'],
       mentee_name = mentee['full_name'],
+      mentee_gender = mentee['gender'],
+      mentee_physical_facility_level = mentee.get('physical_facility_level', None),
       mentor_id = available_mentor['id'],
       mentor_name = available_mentor['full_name'],
+      mentor_gender = available_mentor['gender'],
+      mentor_physical_facility_level = available_mentor.get('physical_facility_level', None),
       supervisor_id = available_supervisor['id'],
       supervisor_name = available_supervisor['full_name'])
     new_matchups.append(matchup)  
@@ -402,51 +438,35 @@ def update_db(existing_matchups, new_matchups):
     MatchUpDetails.objects.filter(id = matchup['id']).update(
       mentee_id = matchup['mentee_id'],
       mentee_name = matchup['mentee_name'],
+      mentee_gender = matchup['mentee_gender'],
+      mentee_physical_facility_level = matchup.get('mentee_physical_facility_level', None),
       mentor_id = matchup['mentor_id'],
       mentor_name = matchup['mentor_name'],
+      mentor_gender = matchup['mentor_gender'],
+      mentor_physical_facility_level = matchup.get('mentor_physical_facility_level', None),
       supervisor_id = matchup['supervisor_id'],
       supervisor_name = matchup['supervisor_name']
     )
   for matchup in new_matchups:
     matchup.save()
 
-
-def get_learners_by_subject(subject, facility_id):
-  classroom_queryset = Classroom.objects.filter(name__iregex=r'^' + re.escape(subject) + '\s[0-9]+$', 
-  parent_id = facility_id).values_list('id', flat=True)
-  classrooms = list(classroom_queryset)
-  learners_queryset = FacilityUser.objects.filter(Q(memberships__collection__in=classrooms)).distinct().values(
-        "id",
-        "username",
-        "full_name",
-        "memberships__collection__id",
-        "memberships__collection__name"
-    )
-  learners = [learner for learner in learners_queryset] 
-  return learners
-
-
-def split_learners(learners):
-  number_of_learners = len(learners)
-  if number_of_learners == 1:
-    return ([], learners)
-  middle_index = number_of_learners//2
-  mentors = learners[:middle_index]
-  mentees = learners[middle_index:]
-  return (mentors, mentees)
-
 def get_matchups_by_subject(subject, facility_id):
   queryset = MatchUpDetails.objects.filter(
             subject = subject, facility_id=facility_id, keepUnassigned = False).distinct().values(
-                "id",
-                "mentee_id",
-                "mentee_name",
-                "mentor_id",
-                "mentor_name",
-                "subject",
-                "supervisor_id",
-                "supervisor_name",
-                "facility_id"
+              "id",
+              "mentee_id",
+              "mentee_name",
+              "mentee_gender",
+              "mentee_physical_facility_level",
+              "mentor_id",
+              "mentor_name",
+              "mentor_gender",
+              "mentor_physical_facility_level",
+              "subject",
+              "supervisor_id",
+              "supervisor_name",
+              "facility_id",
+              "keepUnassigned"
             )
   matchups = [matchup for matchup in queryset]
   return matchups        
@@ -534,7 +554,7 @@ def remove_any_matchup_with_null_mentee(subject, facility_id, supervisor_id, men
 # Also, adds a row for user who are manually added to unassigned pool
 # so that those users are ignored during automated reassignment
 def update_unassigned_pool(request, facility_id, subject):
-  unassigned_pool = None if 'unassigned_pool' not in request else request['unassigned_pool']
+  unassigned_pool = request.get('unassigned_pool', None)
   if unassigned_pool is not None:
     for item in unassigned_pool['mentee_list']: 
       MatchUpDetails.objects.filter(
@@ -547,7 +567,9 @@ def update_unassigned_pool(request, facility_id, subject):
             subject = subject,
             keepUnassigned = True,
             mentee_id = item['id'],
-            mentee_name = item['name']
+            mentee_name = item['name'],
+            mentee_gender = item['gender'],
+            mentee_physical_facility_level = item.get('physical_facility_level', None)
           )
     for item in unassigned_pool['mentor_list']: 
       MatchUpDetails.objects.filter(
@@ -560,7 +582,9 @@ def update_unassigned_pool(request, facility_id, subject):
             subject = subject,
             keepUnassigned = True,
             mentor_id = item['id'],
-            mentor_name = item['name']
+            mentor_name = item['name'],
+            mentor_gender = item['gender'],
+            mentor_physical_facility_level = item.get('physical_facility_level', None)
           )  
     for item in unassigned_pool['supervisor_list']: 
       MatchUpDetails.objects.filter(
@@ -614,10 +638,13 @@ def get_next_available_mentee(fixed_unassigned_pool, unassigned_mentees):
       return mentee
   return None    
 
-def get_next_available_mentor(fixed_unassigned_pool, unassigned_mentors, mentee_id):
+def get_next_available_mentor(fixed_unassigned_pool, unassigned_mentors, mentee_id, match_up_by_gender, mentee_gender):
   if unassigned_mentors is None or len(unassigned_mentors) == 0:
     return None
   for mentor in unassigned_mentors:
+    #if `match_up_by_gender` flag is true and mentor's gender is not same as mentee's, then try next mentor
+    if match_up_by_gender == True and mentor['gender'] != mentee_gender:
+      continue
     if is_user_in_fixed_unassigned_pool(fixed_unassigned_pool, 'mentors', mentor['id']) == False and mentor['id'] != mentee_id:
       unassigned_mentors.remove(mentor)
       return mentor
@@ -633,3 +660,15 @@ def is_user_in_fixed_unassigned_pool(fixed_unassigned_pool, user_type, user_id):
 
   return False        
  
+
+def get_facility_dataset(facility_id):
+    dataset = FacilityDataset.objects.filter(
+            collection__kind=COLLECTION_KIND_FACILITY,
+            collection__id=facility_id
+        ).distinct().values("allow_match_up_same_gender")  
+    return dataset          
+
+
+def should_match_with_same_gender(facility_id):
+    queryset = get_facility_dataset(facility_id)
+    return queryset[0]['allow_match_up_same_gender']

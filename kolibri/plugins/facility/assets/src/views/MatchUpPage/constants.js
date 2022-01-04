@@ -8,3 +8,4 @@ export const SUBJECTS = {
   MATH: { value: 'Math', label: 'Math' },
 };
 export const DEFAULT_SELECTED_SUBJECT = SUBJECTS.MATH.value;
+export const USER_DETAILS_CLASSNAME = 'user-details';

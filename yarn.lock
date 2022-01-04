@@ -7968,9 +7968,9 @@ knuth-shuffle-seeded@^1.0.6:
   dependencies:
     seed-random "~2.2.0"
 
-"kolibri-design-system@git://github.com/AksharFoundation/kolibri-design-system#afa27be90f0e65864e63c44aef9a8d89b9989d9e":
+"kolibri-design-system@git://github.com/AksharFoundation/kolibri-design-system#a88130dd4819a7a1b33e9370094ce6cb62add8ad":
   version "0.2.2-beta-2"
-  resolved "git://github.com/AksharFoundation/kolibri-design-system#afa27be90f0e65864e63c44aef9a8d89b9989d9e"
+  resolved "git://github.com/AksharFoundation/kolibri-design-system#a88130dd4819a7a1b33e9370094ce6cb62add8ad"
   dependencies:
     aphrodite "https://github.com/learningequality/aphrodite/"
     autosize "^3.0.21"

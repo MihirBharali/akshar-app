@@ -11,6 +11,8 @@ from .models import MatchUpDetails
 class UserSerializer(Serializer):
     id = serializers.UUIDField(allow_null=False)
     name = serializers.CharField(max_length=200, allow_blank=False, allow_null=False)
+    gender = serializers.CharField(max_length=16, allow_blank=False, allow_null=False)
+    physical_facility_level = serializers.CharField(max_length=64, allow_blank=False, allow_null=False)
     keepUnassigned = serializers.BooleanField(default=False, allow_null=True)
 
 class MatchUpPairs(Serializer):
@@ -67,8 +69,12 @@ class MatchUpDetailsSerializer(KolibriModelSerializer):
             "id",
             "mentee_id",
             "mentee_name",
+            "mentee_gender",
+            "mentee_physical_facility_level",
             "mentor_id",
             "mentor_name",
+            "mentor_gender",
+            "mentor_physical_facility_level",
             "subject",
             "supervisor_id",
             "supervisor_name",

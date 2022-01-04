@@ -23,6 +23,8 @@
           v-for="(supervisorMatchup, mentorIndex) in supervisorMatchups"
           :id="supervisorMatchup.mentor.id"
           :key="supervisorMatchup.mentor.id"
+          :gender="supervisorMatchup.mentor.gender"
+          :physical_facility_level="supervisorMatchup.mentor.physical_facility_level"
           :index="mentorIndex"
           :name="supervisorMatchup.mentor.name"
           :mentees="supervisorMatchup.mentee_list"
@@ -31,6 +33,7 @@
           @mentor-mentee-match-up-update=" data => $emit('mentor-mentee-match-up-update', data)"
           @unassigned-mentee-added=" data => $emit('unassigned-mentee-added', data)"
           @remove-mentee="data => $emit('remove-mentee', data)"
+          @remove-mentor="data => $emit('remove-mentor', data)"
         />
       </div>
     </template>

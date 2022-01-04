@@ -21,11 +21,12 @@ class AdminMatchUpViewset(viewsets.GenericViewSet, ListModelMixin, CreateModelMi
     def list(self, request):
         subject = request.GET.get('subject', None)
         facility_id = request.GET.get("facility")
+        full_reset = request.GET.get("fullReset")
         if subject is None or facility_id is None:
            return Response("Mandatory param is missing", status=status.HTTP_400_BAD_REQUEST)
 
         result = []
-        result.append(get_matchup_for_admin(facility_id, subject))   
+        result.append(get_matchup_for_admin(facility_id, subject, full_reset))   
         return Response(result, status=status.HTTP_200_OK)
     
     def create(self, request):

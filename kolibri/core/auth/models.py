@@ -155,6 +155,8 @@ class FacilityDataset(FacilityDataSyncableModel):
     learner_promotion_required_quiz_score = models.FloatField(default=100.0)
     learner_promotion_required_lesson_score = models.FloatField(default=100.0)
     show_download_button_in_learn = models.BooleanField(default=True)
+    allow_match_up_same_gender =  models.BooleanField(default=True)
+    sort_match_up_by_physical_facility_level =  models.BooleanField(default=True)
     registered = models.BooleanField(default=False)
 
     def __str__(self):
