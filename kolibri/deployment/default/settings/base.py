@@ -149,12 +149,12 @@ if conf.OPTIONS["Database"]["DATABASE_ENGINE"] == "sqlite":
                 conf.KOLIBRI_HOME,
                 conf.OPTIONS["Database"]["DATABASE_NAME"] or "db.sqlite3",
             ),
-            "OPTIONS": {"timeout": 100},
+            "OPTIONS": {"timeout": 10000},
         },
         "notifications_db": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": os.path.join(conf.KOLIBRI_HOME, "notifications.sqlite3"),
-            "OPTIONS": {"timeout": 100},
+            "OPTIONS": {"timeout": 10000},
         },
     }
     DATABASE_ROUTERS = ("kolibri.core.notifications.models.NotificationsRouter",)

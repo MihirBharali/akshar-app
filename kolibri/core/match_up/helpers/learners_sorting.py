@@ -16,17 +16,21 @@ def get_learners(subject, facility_id):
   # level (eg: class or grade or standard) in the match-up sorting
   sort_by_physical_facility_level = sort_match_up_by_physical_facility_level(facility_id)  
   # Sort the learners by level in the subject  
-  learners.sort(key=lambda x:x.get('memberships__collection__name'), reverse=True)
+  learners.sort(key=lambda x:x.get('memberships__collection__name'), reverse=False)
 
   # split learners into equal size groups of mentees and mentors
   mentees, mentors = split_learners(learners) 
 
-  # Sort the learners by level in their physical facility (eg: school)
-  mentees.sort(key=lambda x:x.get('physical_facility_level'), reverse=False)
-  print(mentees)
-  mentors.sort(key=lambda x:x.get('physical_facility_level'), reverse=False)
-  print(mentors)
+  if sort_by_physical_facility_level == True:
+    mentees = __sort_learners_by_physical_facility_level(mentees)
+    mentors = __sort_learners_by_physical_facility_level(mentors)
   
+  for mentor in mentors:
+    print(mentor['memberships__collection__name'] + ' --- ' + mentor['physical_facility_level'])
+
+  print("---------------------------------------")  
+  for mentee in mentees:
+    print(mentee['memberships__collection__name'] + ' --- ' + mentee['physical_facility_level'])
   return mentees, mentors
 
 
@@ -46,13 +50,21 @@ def get_learners_by_subject(subject, facility_id):
   learners = [learner for learner in learners_queryset] 
   return learners  
 
-def __group_learners_by_level(learners):
-  learnersByLevel = []
+def __sort_learners_by_physical_facility_level(learners):
+  result = []
+  learners_by_Level = {}
   for learner in learners:
     level = learner['memberships__collection__name']
-    if learnersByLevel[level] is None:
-      learnersByLevel[level] = {}
-    learnersByLevel[level].push(level)  
+    if level not in learners_by_Level:
+      learners_by_Level[level] = []
+    learners_by_Level[level].append(learner)  
+
+  for level, learners_in_level in learners_by_Level.items():
+    learners_in_level.sort(key=lambda x:x.get('physical_facility_level'), reverse=False)
+    result += learners_in_level
+
+  result.sort(key=lambda x:x.get('memberships__collection__name'), reverse=True)  
+  return result
 
 
 def split_learners(learners):

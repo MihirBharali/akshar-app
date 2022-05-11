@@ -96,7 +96,6 @@
 
             <KCheckbox
               key="allow_match_up_same_gender"
-              :disabled="enableChangePassword"
               :label="$tr('matchupOnlySameGender')"
               :checked="settings['allow_match_up_same_gender']"
               @change="toggleSetting('allow_match_up_same_gender')"
@@ -104,7 +103,6 @@
 
             <KCheckbox
               key="sort_match_up_by_physical_facility_level"
-              :disabled="enableChangePassword"
               :label="$tr('matchupSortByPhysicalFacility')"
               :checked="settings['sort_match_up_by_physical_facility_level']"
               @change="toggleSetting('sort_match_up_by_physical_facility_level')"

@@ -165,7 +165,7 @@ def get_matchup_for_admin(facility_id, subject, full_reset):
     # list of all prospective mentees and mentors who may or may not be in any matchup  
     # These are just exhaustive lists created by dividing all learners for the
     # specific subject into two list with equal learners after sorting them based on their level.       
-    unassigned_mentors, unassigned_mentees = get_learners(subject, facility_id)    
+    unassigned_mentees, unassigned_mentors = get_learners(subject, facility_id)    
   
     # list of all supervisors for the facility who may or may not be in any matchup 
     unassigned_supervisors = get_supervisors(facility_id)
