@@ -7,9 +7,9 @@ from kolibri.utils.main import update
 from ..models import MatchUpDetails
 from .learners_sorting import get_learners
 
-MAX_PAIRS_PER_COACH = 10
+MAX_PAIRS_PER_COACH = 50
 COLLECTION_KIND_FACILITY = 'facility'
-
+MENTEE_MENTOR_CLASS_MAP = {'4':'8', '3':'7', '2':'6', '1':'5'}
 '''
 Processes a ``PUT`` request to update the matchups for a given 
 subject and facility
@@ -42,7 +42,6 @@ def update_matchups(request):
       print("Processing a match_up")
       mentor = matchup['mentor']
       mentor_id = mentor['id']
-      print(mentor)
       if mentor_id in existing_mentors_id:
         existing_mentors_id.remove(mentor_id)
       
@@ -371,11 +370,12 @@ def process(subject,
   print("Processing matchups.")
   
   match_up_by_gender = should_match_with_same_gender(facility_id) 
+  sort_by_physical_class = sort_match_up_by_physical_facility_level(facility_id)
   #process the existing incomplete matchups first
   for item in incomplete_matchups:
     if item['mentee_id'] is None:
       print(unassigned_mentees)
-      available_mentee = get_next_available_mentee(fixed_unassigned_pool, unassigned_mentees)
+      available_mentee = get_next_available_mentee(fixed_unassigned_pool, unassigned_mentees, sort_by_physical_class)
       print(unassigned_mentees)
       if available_mentee is None:
         continue
@@ -384,7 +384,7 @@ def process(subject,
       item['mentee_gender'] = available_mentee['gender']
       item['mentee_physical_facility_level'] = available_mentee.get('physical_facility_level', None)
     if item['mentor_id'] is None:
-      available_mentor = get_next_available_mentor(fixed_unassigned_pool, unassigned_mentors, item['mentee_id'], match_up_by_gender, item['mentee_gender'])
+      available_mentor = get_next_available_mentor(fixed_unassigned_pool, unassigned_mentors, item['mentee_id'], match_up_by_gender, item['mentee_gender'], mentee['physical_facility_level'], sort_by_physical_class)
       if available_mentor is None:
         continue
       item['mentor_id'] = available_mentor['id']
@@ -404,7 +404,7 @@ def process(subject,
   for mentee in unassigned_mentees:
     if is_user_in_fixed_unassigned_pool(fixed_unassigned_pool, 'mentees', mentee['id']):
       continue
-    available_mentor = get_next_available_mentor(fixed_unassigned_pool, unassigned_mentors, mentee['id'], match_up_by_gender, mentee['gender'])
+    available_mentor = get_next_available_mentor(fixed_unassigned_pool, unassigned_mentors, mentee['id'], match_up_by_gender, mentee['gender'], mentee['physical_facility_level'], sort_by_physical_class)
     #Ensures that a matchup is created only when mentor is available
     if available_mentor is None:
       continue
@@ -629,21 +629,30 @@ def get_users_in_unassignment_pool(facility_id, subject):
   return result
 
 
-def get_next_available_mentee(fixed_unassigned_pool, unassigned_mentees):
+def get_next_available_mentee(fixed_unassigned_pool, unassigned_mentees, sort_by_physical_class):
   if unassigned_mentees is None or len(unassigned_mentees) == 0:
     return None
   for mentee in unassigned_mentees:
+    print(sort_by_physical_class and mentee.get('physical_facility_level') == None)
+    if sort_by_physical_class == True and mentee.get('physical_facility_level', None) is None:
+      print("skipping mentee")
+      continue
     if is_user_in_fixed_unassigned_pool(fixed_unassigned_pool, 'mentees', mentee['id']) == False:
       unassigned_mentees.remove(mentee)
       return mentee
   return None    
 
-def get_next_available_mentor(fixed_unassigned_pool, unassigned_mentors, mentee_id, match_up_by_gender, mentee_gender):
+def get_next_available_mentor(fixed_unassigned_pool, unassigned_mentors, mentee_id, match_up_by_gender, mentee_gender, mentee_physical_level, sort_by_physical_class):
   if unassigned_mentors is None or len(unassigned_mentors) == 0:
-    return None
+    return None 
   for mentor in unassigned_mentors:
+    if sort_by_physical_class == True and mentor.get('physical_facility_level', None) == None:
+      print("skipping mentor")
+      continue
     #if `match_up_by_gender` flag is true and mentor's gender is not same as mentee's, then try next mentor
     if match_up_by_gender == True and mentor['gender'] != mentee_gender:
+      continue
+    if MENTEE_MENTOR_CLASS_MAP[mentee_physical_level] !=  mentor['physical_facility_level']:
       continue
     if is_user_in_fixed_unassigned_pool(fixed_unassigned_pool, 'mentors', mentor['id']) == False and mentor['id'] != mentee_id:
       unassigned_mentors.remove(mentor)
@@ -665,9 +674,12 @@ def get_facility_dataset(facility_id):
     dataset = FacilityDataset.objects.filter(
             collection__kind=COLLECTION_KIND_FACILITY,
             collection__id=facility_id
-        ).distinct().values("allow_match_up_same_gender")  
+        ).distinct().values("allow_match_up_same_gender", "sort_match_up_by_physical_facility_level")  
     return dataset          
 
+def sort_match_up_by_physical_facility_level(facility_id):
+    queryset = get_facility_dataset(facility_id)
+    return queryset[0]['sort_match_up_by_physical_facility_level']
 
 def should_match_with_same_gender(facility_id):
     queryset = get_facility_dataset(facility_id)

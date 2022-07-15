@@ -4,6 +4,7 @@ from django.db.models import Q
 from collections import defaultdict
 
 COLLECTION_KIND_FACILITY = 'facility'
+MENTOR_PHYSICAL_CLASSES = ['8','7','6','5']
 
 # Gets all learners for a subject and divides them into mentees and mentors
 def get_learners(subject, facility_id):
@@ -12,19 +13,9 @@ def get_learners(subject, facility_id):
     print("No learners found.")
     return ([], [])
   
-  # if the `sort_match_up_by_physical_facility_level` flag is True, use the physical facility's (eg: school)
-  # level (eg: class or grade or standard) in the match-up sorting
-  sort_by_physical_facility_level = sort_match_up_by_physical_facility_level(facility_id)  
-  # Sort the learners by level in the subject  
-  learners.sort(key=lambda x:x.get('memberships__collection__name'), reverse=False)
+  mentors, mentees = split_learners(learners) 
+  mentors.sort(key=lambda x:x.get('memberships__collection__name'), reverse=True) 
 
-  # split learners into equal size groups of mentees and mentors
-  mentees, mentors = split_learners(learners) 
-
-  if sort_by_physical_facility_level == True:
-    mentees = __sort_learners_by_physical_facility_level(mentees)
-    mentors = __sort_learners_by_physical_facility_level(mentors)
-  
   for mentor in mentors:
     print(mentor['memberships__collection__name'] + ' --- ' + mentor['physical_facility_level'])
 
@@ -51,29 +42,36 @@ def get_learners_by_subject(subject, facility_id):
   return learners  
 
 def __sort_learners_by_physical_facility_level(learners):
-  result = []
-  learners_by_Level = {}
-  for learner in learners:
-    level = learner['memberships__collection__name']
-    if level not in learners_by_Level:
-      learners_by_Level[level] = []
-    learners_by_Level[level].append(learner)  
+ # result = []
+# learners_by_Level = {}
+ # for learner in learners:
+  #  level = learner['memberships__collection__name']
+  #  if level not in learners_by_Level:
+   #   learners_by_Level[level] = []
+  #  learners_by_Level[level].append(learner)  
 
-  for level, learners_in_level in learners_by_Level.items():
-    learners_in_level.sort(key=lambda x:x.get('physical_facility_level'), reverse=False)
-    result += learners_in_level
+  #for level, learners_in_level in learners_by_Level.items():
+  learners.sort(key=lambda x:x.get('physical_facility_level'), reverse=True)
+  print(learners)
+  return learners
+   # result += learners_in_level
 
-  result.sort(key=lambda x:x.get('memberships__collection__name'), reverse=True)  
-  return result
+  #result.sort(key=lambda x:x.get('memberships__collection__name'), reverse=True)  
+ # return result
 
 
+#Spliting students strictly on the basis of physical facility class
 def split_learners(learners):
   number_of_learners = len(learners)
   if number_of_learners == 1:
     return ([], learners)
-  middle_index = number_of_learners//2
-  mentors = learners[:middle_index]
-  mentees = learners[middle_index:]
+  mentors = []
+  mentees = []
+  for learner in learners:
+    if learner['physical_facility_level'] in MENTOR_PHYSICAL_CLASSES:
+      mentors.append(learner)
+    else:
+      mentees.append(learner)  
   return (mentors, mentees)  
 
 

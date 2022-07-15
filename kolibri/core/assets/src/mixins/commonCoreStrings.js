@@ -230,6 +230,11 @@ export const coreStrings = createTranslator('CommonCoreStrings', {
     context:
       "An 'Identifier' could be a student ID number or an existing user identification number. This is an optional field in the user create/edit screen.",
   },
+  physicalClassLabel: {
+    message: 'Class',
+    context:
+      "A 'class' is the standard of the learner in the physical facility. This is an optional field in the user create/edit screen.",
+  },
   inProgressLabel: 'In progress',
   //Rebranding to Akshar. Keeping the variable name as it is.
   kolibriLabel: {
@@ -420,6 +425,11 @@ export const coreStrings = createTranslator('CommonCoreStrings', {
   },
   identifierTooltip: {
     message: 'Examples: a student ID number or an existing user identification number.',
+    context:
+      "Tooltip with information referring to the optional 'Identifier' field in the 'Create new user' form.",
+  },
+  classTooltip: {
+    message: 'Examples: a student class/level/standard in the physical facility (school)',
     context:
       "Tooltip with information referring to the optional 'Identifier' field in the 'Create new user' form.",
   },

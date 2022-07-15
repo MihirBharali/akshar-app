@@ -269,10 +269,11 @@ class FacilityUserViewSet(ValuesViewset):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
+        learner_id = instance.id
         self.perform_destroy(instance)
         # Not a good design but required to trigger automatic reassignment :(
-        delete_promotion_requests(learner_id = instance.id, facility_id = instance.facility_id)
-        update_matchup(user_id = instance.id, facility_id = instance.facility_id)
+        delete_promotion_requests(learner_id = learner_id, facility_id = instance.facility_id)
+        update_matchup(user_id = learner_id, facility_id = instance.facility_id)
         return Response(status=status.HTTP_204_NO_CONTENT)    
 
 

@@ -2,11 +2,14 @@
 
   <div class="pos-rel">
     <KTextbox
+      ref="textbox"
       class="identifier-textbox"
       :value="value"
       :label="$tr('label')"
-      :maxlength="64"
+      :maxlength="2"
       v-bind="$attrs"
+      :invalid="Boolean(shownInvalidText)"
+      :invalidText="shownInvalidText"
       @input="$emit('update:value', $event)"
     />
     <CoreInfoIcon
@@ -37,6 +40,9 @@
         type: String,
         default: null,
       },
+      shouldValidate: {
+        type: Boolean,
+      },
     },
     computed: {
       tooltipPlacement() {
@@ -45,10 +51,39 @@
         }
         return 'bottom';
       },
+      invalidText() {
+        if (this.value === '') {
+          return this.coreString('requiredFieldError');
+        }
+        return '';
+      },
+      shownInvalidText() {
+        if (this.blurred || this.shouldValidate) {
+          return this.invalidText;
+        }
+        return '';
+      },
+      valid() {
+        return this.invalidText === '';
+      },
+    },
+    watch: {
+      valid: {
+        handler(value) {
+          this.$emit('update:isValid', value);
+        },
+        immediate: true,
+      },
+    },
+    methods: {
+      // @public
+      focus() {
+        return this.$refs.textbox.focus();
+      },
     },
     $trs: {
       label: {
-        message: 'Class (Optional)',
+        message: 'Class',
         context: 'Optional type of data that can be used on an imported spreadsheet.',
       },
       inputTooltip: {

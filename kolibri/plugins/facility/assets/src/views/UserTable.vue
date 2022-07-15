@@ -33,11 +33,11 @@
         </th>
         <template v-if="showDemographicInfo">
           <th>
-            <span>{{ coreString('identifierLabel') }}</span>
+            <span>{{ coreString('physicalClassLabel') }}</span>
             <CoreInfoIcon
               class="tooltip"
               :iconAriaLabel="coreString('identifierAriaLabel')"
-              :tooltipText="coreString('identifierTooltip')"
+              :tooltipText="coreString('classTooltip')"
             />
           </th>
           <th>
@@ -95,8 +95,8 @@
             </td>
             <template v-if="showDemographicInfo">
               <td class="id-col">
-                <span v-if="user.id_number">
-                  {{ user.id_number }}
+                <span v-if="user.physical_facility_level">
+                  {{ user.physical_facility_level }}
                 </span>
                 <KEmptyPlaceholder v-else />
               </td>

@@ -43,7 +43,6 @@ def get_promotion_list(role, **kwargs):
          return serialize_promotions(query_promotion)
 
 
-
 def serialize_promotions(queryset):
     return list(queryset.values(
             "id", 
@@ -82,14 +81,15 @@ def create_new_promotion_entry(exam_log_id, request):
     lesson_completion = get_lesson_completion_score(exam_data[0]["collection"], exam_log_data[0]["user"])
     if lesson_completion < get_required_lesson_completion_score(facility_id):
         promotion_status = "LESSONS_PENDING"
+    print("Adding new promotion item")    
     PromotionQueue.objects.update_or_create(
         learner_id = exam_log_data[0]["user"],
         quiz_id = exam_data[0]["id"],
         classroom_id = exam_data[0]["collection"],
-        facility_id =facility_id,   
+        facility_id =facility_id, 
         defaults={
             'learner_name' : user_data[0]["full_name"], 
-            'classroom_name' : classroom_data[0]["name"],
+            'classroom_name' : user_data[0]["physical_facility_level"],
             'quiz_name' : exam_data[0]["title"],
             'quiz_score' : quiz_score,
             'lesson_completion' : lesson_completion,
@@ -115,7 +115,7 @@ def serialize_exam_data(queryset):
                 "collection_id"
             )
 def serialize_user_data(queryset):
-    return queryset.values("full_name")        
+    return queryset.values("full_name", "physical_facility_level")        
 
 def serialize_classroom_data(queryset):
     return queryset.values("name", "parent", "id")       

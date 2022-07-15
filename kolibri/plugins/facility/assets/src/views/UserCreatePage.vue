@@ -66,8 +66,11 @@
         />
         <template v-if="learnerIsSelected">
           <PhysicalFacilityLevelTextBox
-            :value.sync="physicalFacilityLevel"
-            :disabled="formDisabled"
+            ref="classTextBox"
+            :value.sync="classroom"
+            :disabled="busy"
+            :isValid.sync="classValid"
+            :shouldValidate="formSubmitted"
           />
         </template>
 
@@ -151,6 +154,8 @@
         usernameValid: false,
         password: '',
         passwordValid: false,
+        classroom: '',
+        classValid: false,
         gender: NOT_SPECIFIED,
         birthYear: NOT_SPECIFIED,
         idNumber: '',
@@ -188,7 +193,7 @@
         return this.kind.value == UserKinds.LEARNER;
       },
       formIsValid() {
-        return every([this.fullNameValid, this.usernameValid, this.passwordValid]);
+        return every([this.fullNameValid, this.usernameValid, this.passwordValid, this.classValid]);
       },
       userTypeOptions() {
         return [
@@ -236,6 +241,7 @@
           return this.focusOnInvalidField();
         }
         this.busy = true;
+        console.log(this.classroom);
         this.$store
           .dispatch('userManagement/createFacilityUser', {
             username: this.username,
@@ -243,6 +249,7 @@
             id_number: this.idNumber,
             gender: this.gender,
             birth_year: this.birthYear,
+            physical_facility_level: this.classroom,
             role: {
               kind: this.newUserRole,
             },
@@ -277,6 +284,8 @@
             this.$refs.usernameTextbox.focus();
           } else if (!this.passwordValid) {
             this.$refs.passwordTextbox.focus();
+          } else if (!this.classValid) {
+            this.$refs.classTextBox.focus();
           }
         });
       },
