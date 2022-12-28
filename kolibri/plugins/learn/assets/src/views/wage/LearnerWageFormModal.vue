@@ -89,7 +89,7 @@
         return 1;
       },
       maxAmount() {
-        return 1000;
+        return 10000;
       },
       invalidAmountValue() {
         return this.$tr('invalidAmountError');
