@@ -193,6 +193,9 @@
         return this.kind.value == UserKinds.LEARNER;
       },
       formIsValid() {
+        if (this.kind.value != UserKinds.LEARNER) {
+          this.classValid = true;
+        }
         return every([this.fullNameValid, this.usernameValid, this.passwordValid, this.classValid]);
       },
       userTypeOptions() {
@@ -236,12 +239,11 @@
           password = 'NOT_SPECIFIED';
           this.passwordValid = true;
         }
-
         if (!this.formIsValid) {
           return this.focusOnInvalidField();
         }
         this.busy = true;
-        console.log(this.classroom);
+
         this.$store
           .dispatch('userManagement/createFacilityUser', {
             username: this.username,
@@ -284,7 +286,7 @@
             this.$refs.usernameTextbox.focus();
           } else if (!this.passwordValid) {
             this.$refs.passwordTextbox.focus();
-          } else if (!this.classValid) {
+          } else if (this.kind.value == UserKinds.LEARNER) {
             this.$refs.classTextBox.focus();
           }
         });
